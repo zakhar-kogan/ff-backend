@@ -24,9 +24,7 @@ async def load_file_to_mystic(file_content: bytes) -> str:
             headers=HEADERS,
         )
         response.raise_for_status()
-        # Concatenating as v4 just returns starting with /pipeline_files
-        path = "https://storage.mystic.ai/" + response.json()["path"]
-        return path
+        return response.json()["url"]
 
 
 async def ocr_mystic_file_path(
@@ -39,8 +37,6 @@ async def ocr_mystic_file_path(
             "https://www.mystic.ai/v4/runs",
             json={
                 "pipeline": pipeline_id,
-                # Removed as not required now
-                # "async_run": False,
                 "inputs": [
                     {
                         "type": "file",
