@@ -675,6 +675,58 @@ async def get_most_shared_memes(
     return res
 
 
+async def goat(
+    user_id: int,
+    limit: int = 10,
+    exclude_meme_ids: list[int] = [],
+):
+    query = f"""
+        WITH SCORES AS (
+            SELECT
+                MS.meme_id,
+                1
+                    * MS.nlikes / (MS.nmemes_sent + 1.)
+                    * CASE WHEN MS.sec_to_react BETWEEN 2 AND 10 THEN 1 ELSE 0.8 END
+                    * CASE WHEN MS.invited_count > 0 THEN 1 ELSE 0.5 END
+                    * CASE WHEN MS.age_days < 30 THEN 1 ELSE 0.5 END
+                    * CASE WHEN MS.raw_impr_rank < 1 THEN 1 ELSE 0.8 END
+                    * MSS.nlikes / (MSS.nmemes_sent_events + 1.)
+                AS score
+            FROM meme M
+            INNER JOIN meme_stats MS
+                ON M.id = MS.meme_id
+            INNER JOIN meme_source_stats MSS
+                ON MSS.meme_source_id = M.meme_source_id
+            WHERE  M.status = 'ok'
+        )
+
+        SELECT
+            M.id
+           , M.type, M.telegram_file_id, M.caption
+           , 'goat' AS recommended_by,
+            SCORES.score
+        FROM meme M
+        INNER JOIN SCORES
+            ON SCORES.meme_id = M.id
+
+        INNER JOIN user_language L
+            ON L.user_id = {user_id}
+            AND L.language_code = M.language_code
+
+        LEFT JOIN user_meme_reaction R
+                ON R.meme_id = M.id
+                AND R.user_id = {user_id}
+
+        WHERE 1=1
+            AND R.meme_id IS NULL
+            {exclude_meme_ids_sql_filter(exclude_meme_ids)}
+        ORDER BY SCORES.score DESC NULLS LAST
+        LIMIT {limit}
+    """
+    res = await fetch_all(text(query))
+    return res
+
+
 async def get_recently_liked(
     user_id: int,
     limit: int = 10,
@@ -736,6 +788,7 @@ class CandidatesRetriever:
         "best_memes_from_each_source": get_best_memes_from_each_source,
         "like_spread_and_recent_memes": like_spread_and_recent_memes,
         "recently_liked": get_recently_liked,
+        "goat": goat,
     }
 
     async def get_candidates(
