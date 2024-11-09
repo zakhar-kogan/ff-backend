@@ -731,6 +731,7 @@ class CandidatesRetriever:
         "uploaded_memes": uploaded_memes,
         "fast_dopamine": get_fast_dopamine,
         "lr_smoothed": get_lr_smoothed,
+        "most_shared": get_most_shared_memes,
         "selected_sources": get_selected_sources,
         "best_memes_from_each_source": get_best_memes_from_each_source,
         "like_spread_and_recent_memes": like_spread_and_recent_memes,
