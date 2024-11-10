@@ -94,7 +94,7 @@ async def generate_and_send_meme_explanation(message: Message):
 
     if message.reply_to_message:
         text = message.reply_to_message.text
-        if len(text) > 3:
+        if text and len(text) > 3:
             prompt += (
                 f"Эту картинку прислали в ответ на сообщение с таким текстом: '{text}'"
             )
