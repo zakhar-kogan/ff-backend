@@ -4,7 +4,7 @@ import logging
 
 from openai import AsyncOpenAI
 from telegram import Message, Update
-from telegram.error import Forbidden
+from telegram.error import Forbidden, BadRequest
 from telegram.ext import ContextTypes
 
 from src.config import settings
@@ -107,10 +107,12 @@ async def generate_and_send_meme_explanation(message: Message):
             await message.reply_text(vision_result)
         except Forbidden:
             log(
-                f"Can't send meme explanation to chat: {vision_result}",
+                f"Can't send explanation to chat {message.chat_id}: {vision_result}",
                 level=logging.ERROR,
                 exc_info=True,
             )
+        except BadRequest:
+            pass
 
 
 async def explain_meme_en(update: Update, _: ContextTypes.DEFAULT_TYPE):
