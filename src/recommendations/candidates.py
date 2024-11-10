@@ -660,8 +660,7 @@ async def goat(
         SELECT
             M.id
            , M.type, M.telegram_file_id, M.caption
-           , 'goat' AS recommended_by,
-            SCORES.score
+           , 'goat' AS recommended_by
         FROM meme M
         INNER JOIN SCORES
             ON SCORES.meme_id = M.id
