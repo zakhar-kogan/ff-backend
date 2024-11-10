@@ -92,6 +92,9 @@ async def generate_and_send_meme_explanation(message: Message):
 Не пересказывай содержание мема и используй неформальную лексику.
     """
 
+    if message.text and len(message.text) > 3:
+        prompt += f"Под картинкой было сообщение с таким текстом: '{message.text}'"
+
     if message.reply_to_message:
         text = message.reply_to_message.text
         if text and len(text) > 3:
