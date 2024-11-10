@@ -103,24 +103,23 @@ async def generate_recommendations(
         # <30 is treated as cold start. no blending
         if nmemes_sent < 30:
             candidates = await retriever.get_candidates(
-                "fast_dopamine", user_id, limit, exclude_mem_ids=meme_ids_in_queue
+                "best_uploaded_memes",
+                user_id,
+                limit,
+                exclude_mem_ids=meme_ids_in_queue,
             )
 
             if len(candidates) == 0:
                 candidates = await retriever.get_candidates(
-                    "best_memes_from_each_source",
-                    user_id,
-                    limit,
-                    exclude_mem_ids=meme_ids_in_queue,
+                    "fast_dopamine", user_id, limit, exclude_mem_ids=meme_ids_in_queue
                 )
 
             return candidates
 
         if nmemes_sent < 100:
             weights = {
-                "uploaded_memes": 0.2,
+                "best_uploaded_memes": 0.1,
                 "fast_dopamine": 0.2,
-                "best_memes_from_each_source": 0.2,
                 "lr_smoothed": 0.2,
                 "recently_liked": 0.2,
                 "goat": 0.2,
@@ -135,9 +134,11 @@ async def generate_recommendations(
 
         # >=100
         weights = {
-            "uploaded_memes": 0.3,
+            "best_uploaded_memes": 0.3,
             "like_spread_and_recent_memes": 0.3,
             "lr_smoothed": 0.4,
+            "recently_liked": 0.2,
+            "goat": 0.2,
         }
 
         candidates_dict = await retriever.get_candidates_dict(
@@ -150,14 +151,6 @@ async def generate_recommendations(
         if len(candidates) == 0 and nmemes_sent > 1000:
             candidates = await retriever.get_candidates(
                 "less_seen_meme_and_source",
-                user_id,
-                limit,
-                exclude_mem_ids=meme_ids_in_queue,
-            )
-
-        if len(candidates) == 0:
-            candidates = await retriever.get_candidates(
-                "best_memes_from_each_source",
                 user_id,
                 limit,
                 exclude_mem_ids=meme_ids_in_queue,

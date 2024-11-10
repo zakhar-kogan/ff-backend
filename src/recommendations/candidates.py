@@ -312,7 +312,7 @@ async def classic(
     return res
 
 
-async def uploaded_memes(
+async def best_uploaded_memes(
     user_id: int,
     limit: int = 10,
     exclude_meme_ids: list[int] = [],
@@ -634,20 +634,28 @@ async def goat(
             SELECT
                 MS.meme_id,
                 1
-                    * MS.nlikes / (MS.nmemes_sent + 1.)
-                    * CASE WHEN MS.sec_to_react BETWEEN 2 AND 10 THEN 1 ELSE 0.8 END
-                    * CASE WHEN MS.invited_count > 0 THEN 1 ELSE 0.5 END
-                    * CASE WHEN MS.age_days < 30 THEN 1 ELSE 0.5 END
+        --			* MS.nlikes / (MS.nmemes_sent + 1.)
+        --			* MS.lr_smoothed
+                    * (MS.nlikes + MS.ndislikes) / (MS.nmemes_sent + 1)
+                    * CASE WHEN MS.sec_to_react BETWEEN 2 AND 10 THEN 1 ELSE 0.6 END
+                    * CASE WHEN MS.invited_count > 0 THEN 1 ELSE 0.8 END
+        --			* CASE WHEN MS.age_days < 30 THEN 1 ELSE 0.5 END
                     * CASE WHEN MS.raw_impr_rank < 1 THEN 1 ELSE 0.8 END
-                    * MSS.nlikes / (MSS.nmemes_sent_events + 1.)
+        --			* MSS.nlikes / (MSS.nmemes_sent_events + 1.)
+                    * (MSS.nlikes + MSS.ndislikes) / (MSS.nmemes_sent_events + 1.)
+                    * UMSS.nlikes * UMSS.nlikes / (UMSS.nlikes + UMSS.ndislikes)
                 AS score
             FROM meme M
             INNER JOIN meme_stats MS
                 ON M.id = MS.meme_id
             INNER JOIN meme_source_stats MSS
                 ON MSS.meme_source_id = M.meme_source_id
-            WHERE  M.status = 'ok'
+            INNER JOIN user_meme_source_stats UMSS
+                ON UMSS.user_id = {user_id}
+                AND UMSS.meme_source_id = M.meme_source_id
+            WHERE M.status = 'ok'
         )
+
 
         SELECT
             M.id
@@ -729,7 +737,7 @@ class CandidatesRetriever:
 
     engine_map = {
         "less_seen_meme_and_source": less_seen_meme_and_source,
-        "uploaded_memes": uploaded_memes,
+        "best_uploaded_memes": best_uploaded_memes,
         "fast_dopamine": get_fast_dopamine,
         "lr_smoothed": get_lr_smoothed,
         "most_shared": get_most_shared_memes,
