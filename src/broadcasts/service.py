@@ -3,10 +3,10 @@ from sqlalchemy import text
 from src.database import fetch_all
 
 
-async def get_users_active_minutes_ago(
+async def get_user_ids_active_minutes_ago(
     from_minutes_ago: int,
     to_minutes_ago: int,
-) -> list[dict]:
+) -> list[int]:
     assert from_minutes_ago < to_minutes_ago
     insert_query = f"""
         SELECT
@@ -19,7 +19,8 @@ async def get_users_active_minutes_ago(
                 AND
                 NOW() - INTERVAL '{from_minutes_ago} MINUTES'
     """
-    return await fetch_all(text(insert_query))
+    res = await fetch_all(text(insert_query))
+    return [r["id"] for r in res]
 
 
 async def get_users_to_broadcast_meme_from_tgchannelru(
