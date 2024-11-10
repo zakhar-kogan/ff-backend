@@ -86,13 +86,20 @@ async def explain_meme_ru(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def generate_and_send_meme_explanation(message: Message):
     file_id = message.photo[-1].file_id
     image_bytes = await download_meme_content_from_tg(file_id)
-    vision_result = await call_chatgpt_vision(
-        image_bytes,
-        """
+
+    prompt = """
 Мама прислала тебе эту смешную картинку. Объясни двумя предложениями, в чем прикол.
 Не пересказывай содержание мема и используй неформальную лексику.
-        """,
-    )
+    """
+
+    if message.reply_to_message:
+        text = message.reply_to_message.text
+        if len(text) > 3:
+            prompt += (
+                f"Эту картинку прислали в ответ на сообщение с таким текстом: '{text}'"
+            )
+
+    vision_result = await call_chatgpt_vision(image_bytes, prompt)
 
     if vision_result:
         vision_result = html.unescape(vision_result)
