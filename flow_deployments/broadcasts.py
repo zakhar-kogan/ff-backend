@@ -4,6 +4,7 @@ from prefect.deployments import Deployment
 from src.config import settings
 from src.flows.broadcasts.meme import (
     broadcast_next_meme_to_active_1w_ago,
+    broadcast_next_meme_to_active_2w_ago,
     broadcast_next_meme_to_active_4w_ago,
     broadcast_next_meme_to_active_15m_ago,
     broadcast_next_meme_to_active_24h_ago,
@@ -46,6 +47,17 @@ deployment_broadcast_1w_ago = Deployment.build_from_flow(
     flow=broadcast_next_meme_to_active_1w_ago,
     name="broadcast_next_meme_to_active_1w_ago",
     schedules=[CronSchedule(cron="7 * * * *", timezone="Europe/London")],
+    work_pool_name=settings.ENVIRONMENT,
+)
+
+deployment_broadcast_1w_ago.apply()
+
+
+# broadcasts meme in 2w after last activity
+deployment_broadcast_2w_ago = Deployment.build_from_flow(
+    flow=broadcast_next_meme_to_active_2w_ago,
+    name="broadcast_next_meme_to_active_2w_ago",
+    schedules=[CronSchedule(cron="8 * * * *", timezone="Europe/London")],
     work_pool_name=settings.ENVIRONMENT,
 )
 
