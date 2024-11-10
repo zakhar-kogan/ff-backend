@@ -52,7 +52,10 @@ async def explain_meme_ru(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # check that the meme was sent by our bot or the correct user
 
-    our_channel = update.message.sender_chat.id == TELEGRAM_CHANNEL_RU_CHAT_ID
+    our_channel = (
+        update.message.sender_chat
+        and update.message.sender_chat.id == TELEGRAM_CHANNEL_RU_CHAT_ID
+    )
     if our_channel:
         return await generate_and_send_meme_explanation(update.message)
 
