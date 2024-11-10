@@ -1,10 +1,9 @@
 import base64
 import html
-import logging
 
 from openai import AsyncOpenAI
 from telegram import Message, Update
-from telegram.error import Forbidden, BadRequest
+from telegram.error import BadRequest, Forbidden
 from telegram.ext import ContextTypes
 
 from src.config import settings
@@ -49,6 +48,11 @@ async def explain_meme_ru(update: Update, context: ContextTypes.DEFAULT_TYPE):
     Explain a tg channel post to the user
     Handle message from channel in a chat
     """
+    if not update.message:
+        return await log(
+            f"explain_meme_ru: unexpected update: {html.escape(update.to_json())}",
+            bot=context.bot,
+        )
 
     # check that the meme was sent by our bot or the correct user
 
@@ -109,16 +113,14 @@ async def generate_and_send_meme_explanation(message: Message):
         try:
             await message.reply_text(vision_result)
         except Forbidden:
-            log(
+            await log(
                 f"Can't send explanation to chat {message.chat_id}: {vision_result}",
-                level=logging.ERROR,
-                exc_info=True,
             )
         except BadRequest:
             pass
 
 
-async def explain_meme_en(update: Update, _: ContextTypes.DEFAULT_TYPE):
+async def explain_meme_en(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.message is None:
         return  # idk why that happens
 
@@ -137,8 +139,7 @@ Don't retell the meme and use informal language.
         try:
             await update.message.reply_text(vision_result)
         except Forbidden:
-            log(
+            await log(
                 f"Can't send meme explanation to chat: {vision_result}",
-                level=logging.ERROR,
-                exc_info=True,
+                bot=context.bot,
             )
