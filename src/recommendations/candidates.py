@@ -399,58 +399,6 @@ async def like_spread_and_recent_memes(
     return res
 
 
-async def get_best_memes_from_each_source(
-    user_id: int,
-    limit: int = 10,
-    exclude_meme_ids: list[int] = [],
-) -> list[dict[str, Any]]:
-    query = f"""
-        SELECT
-            M.id
-            , M.type, M.telegram_file_id, M.caption, M.recommended_by
-        FROM (
-            SELECT DISTINCT ON (M.meme_source_id)
-                M.id, M.type, M.telegram_file_id, M.caption,
-                'best_meme_from_each_source' as recommended_by,
-
-                1
-                    * CASE WHEN MS.raw_impr_rank <= 1 THEN 1 ELSE 0.8 END
-                    * CASE WHEN MS.age_days < 14 THEN 1 ELSE 0.8 END
-                    * COALESCE((MS.nlikes+1.) / (MS.nlikes+MS.ndislikes+1), 0.5)
-                    * CASE
-                        WHEN MS.nmemes_sent <= 1 THEN 1
-                        ELSE (MS.nlikes + MS.ndislikes) * 1. / MS.nmemes_sent
-                    END
-                AS score
-
-            FROM meme M
-            LEFT JOIN user_meme_reaction R
-                ON R.meme_id = M.id
-                AND R.user_id = {user_id}
-
-            INNER JOIN user_language L
-                ON L.user_id = {user_id}
-                AND L.language_code = M.language_code
-
-            LEFT JOIN meme_stats MS
-                ON MS.meme_id = M.id
-
-            WHERE 1=1
-                AND M.status = 'ok'
-                AND R.meme_id IS NULL
-                AND MS.nlikes > 0
-                AND (MS.nlikes) / (MS.nlikes+MS.ndislikes) > 0.2
-                AND MS.sec_to_react < 20
-                {exclude_meme_ids_sql_filter(exclude_meme_ids)}
-            ORDER BY M.meme_source_id, score DESC
-        ) M
-        ORDER BY score DESC
-        LIMIT {limit}
-    """
-    res = await fetch_all(text(query))
-    return res
-
-
 async def get_selected_sources(
     user_id: int,
     limit: int = 10,
@@ -786,7 +734,6 @@ class CandidatesRetriever:
         "lr_smoothed": get_lr_smoothed,
         "most_shared": get_most_shared_memes,
         "selected_sources": get_selected_sources,
-        "best_memes_from_each_source": get_best_memes_from_each_source,
         "like_spread_and_recent_memes": like_spread_and_recent_memes,
         "recently_liked": get_recently_liked,
         "goat": goat,

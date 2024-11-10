@@ -27,21 +27,9 @@ async def test_generate_below_30():
     ) -> list[dict[str, Any]]:
         return []
 
-    async def get_best_memes_from_each_source(
-        self,
-        user_id: int,
-        limit: int = 10,
-        exclude_meme_ids: list[int] = [],
-    ) -> list[dict[str, Any]]:
-        return [
-            {"id": 3},
-            {"id": 4},
-        ]
-
     class TestRetriever(CandidatesRetriever):
         engine_map = {
             "fast_dopamine": get_fast_dopamine,
-            "best_meme_from_each_source": get_best_memes_from_each_source,
         }
 
     candidates = await generate_recommendations(1, 10, 10, TestRetriever())
@@ -52,7 +40,6 @@ async def test_generate_below_30():
     class TestRetriever(CandidatesRetriever):
         engine_map = {
             "fast_dopamine": get_fast_dopamine_empty,
-            "best_memes_from_each_source": get_best_memes_from_each_source,
         }
 
     candidates = await generate_recommendations(1, 10, 10, TestRetriever())
@@ -85,17 +72,6 @@ async def test_generate_below_100():
             {"id": 4},
         ]
 
-    async def get_best_memes_from_each_source(
-        self,
-        user_id: int,
-        limit: int = 10,
-        exclude_meme_ids: list[int] = [],
-    ) -> list[dict[str, Any]]:
-        return [
-            {"id": 5},
-            {"id": 6},
-        ]
-
     async def get_lr_smoothed(
         self,
         user_id: int,
@@ -122,7 +98,6 @@ async def test_generate_below_100():
         engine_map = {
             "uploaded_memes": uploaded_memes,
             "fast_dopamine": get_fast_dopamine,
-            "best_memes_from_each_source": get_best_memes_from_each_source,
             "lr_smoothed": get_lr_smoothed,
             "recently_liked": get_recentrly_liked,
         }
@@ -222,24 +197,12 @@ async def test_generate_empty_above_100():
             {"id": 2},
         ]
 
-    async def get_best_memes_from_each_source(
-        self,
-        user_id: int,
-        limit: int = 10,
-        exclude_meme_ids: list[int] = [],
-    ) -> list[dict[str, Any]]:
-        return [
-            {"id": 3},
-            {"id": 4},
-        ]
-
     class TestRetriever(CandidatesRetriever):
         engine_map = {
             "uploaded_memes": uploaded_memes,
             "like_spread_and_recent_memes": like_spread_and_recent_memes,
             "lr_smoothed": get_lr_smoothed,
             "less_seen_meme_and_source": top_memes_from_less_seen_sources,
-            "best_memes_from_each_source": get_best_memes_from_each_source,
         }
 
     candidates = await generate_recommendations(1, 10, 200, TestRetriever())
