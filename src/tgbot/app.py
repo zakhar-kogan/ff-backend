@@ -27,6 +27,7 @@ from src.tgbot.constants import (
     TELEGRAM_CHAT_EN_CHAT_ID,
     TELEGRAM_CHAT_RU_CHAT_ID,
     TELEGRAM_FEEDBACK_CHAT_ID,
+    TELEGRAM_MODERATOR_CHAT_ID,
 )
 from src.tgbot.handlers import (
     alerts,
@@ -225,9 +226,8 @@ def add_handlers(application: Application) -> None:
     # handle new meme in channel discussion
     application.add_handler(
         MessageHandler(
-            filters=filters.Chat(TELEGRAM_CHAT_RU_CHAT_ID)
-            & filters.PHOTO
-            & filters.SenderChat(TELEGRAM_CHANNEL_RU_CHAT_ID),
+            filters=filters.Chat([TELEGRAM_CHAT_RU_CHAT_ID, TELEGRAM_MODERATOR_CHAT_ID])
+            & filters.PHOTO,
             callback=explain_meme_ru,
         )
     )
