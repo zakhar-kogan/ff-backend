@@ -129,6 +129,7 @@ async def generate_recommendations(
                 "best_memes_from_each_source": 0.2,
                 "lr_smoothed": 0.2,
                 "recently_liked": 0.2,
+                "goat": 0.2,
             }
 
             candidates_dict = await retriever.get_candidates_dict(

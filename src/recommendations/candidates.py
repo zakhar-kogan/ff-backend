@@ -1,3 +1,4 @@
+import asyncio
 from typing import Any
 
 from sqlalchemy import text
@@ -810,10 +811,9 @@ class CandidatesRetriever:
         limit: int = 10,
         exclude_mem_ids: list[int] = [],
     ) -> dict[str, list[dict[str, Any]]]:
-        candidates_dict = {}
-        for engine in engines:
-            candidates_dict[engine] = await self.get_candidates(
-                engine, user_id, limit, exclude_mem_ids
-            )
-
-        return candidates_dict
+        tasks = {
+            engine: self.get_candidates(engine, user_id, limit, exclude_mem_ids)
+            for engine in engines
+        }
+        results = await asyncio.gather(*tasks.values())
+        return dict(zip(engines, results))
