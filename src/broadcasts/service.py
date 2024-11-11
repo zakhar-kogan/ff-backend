@@ -48,6 +48,24 @@ async def get_users_to_broadcast_meme_from_tgchannelru(
     return await fetch_all(text(select_query))
 
 
+async def get_users_to_broadcast_post_from_tgchannelru():
+    # select users
+    # 1. with language ru
+    # 2. who hadn't followed the channel
+
+    select_query = """
+        SELECT DISTINCT UL.user_id
+        FROM user_language UL
+        LEFT JOIN user_tg_chat_membership UTCM
+            ON UTCM.user_tg_id = UL.user_id
+        WHERE 1=1
+            AND UL.language_code = 'ru'
+            AND UTCM.user_tg_id IS NULL
+    """
+
+    return await fetch_all(text(select_query))
+
+
 async def get_users_with_language(
     language_code: str,
 ):
