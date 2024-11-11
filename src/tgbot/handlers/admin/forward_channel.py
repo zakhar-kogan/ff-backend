@@ -69,6 +69,9 @@ async def handle_forwarded_from_tgchannelru(
         # /means just forward this to all users
         users = await get_users_to_broadcast_post_from_tgchannelru()
 
+        await update.message.reply_text(f"Forwarding post to {len(users)}")
+        await log(f"Forwarding post to {len(users)}", context.bot)
+
         # return await update.message.reply_text(
         #     f"Can't parse caption: {escape(str(update.message.to_dict()))}"
         # )
@@ -88,8 +91,8 @@ async def handle_forwarded_from_tgchannelru(
         meme = MemeData(**meme_data)
         users = await get_users_to_broadcast_meme_from_tgchannelru(meme.id)
 
-    await update.message.reply_text(f"Forwarding meme_id={meme.id} to {len(users)}")
-    await log(f"Forwarding meme_id={meme.id} to {len(users)}", context.bot)
+        await update.message.reply_text(f"Forwarding meme_id={meme.id} to {len(users)}")
+        await log(f"Forwarding meme_id={meme.id} to {len(users)}", context.bot)
 
     users_received = 0
     random.shuffle(users)
@@ -106,12 +109,8 @@ async def handle_forwarded_from_tgchannelru(
         if await forward_message_to_user(update.message, user_id):
             users_received += 1
             if users_received % 100 == 0:
-                await log(
-                    f"⏳ {users_received} users received forward with meme #{meme.id}"
-                )
+                await log(f"⏳ {users_received} users received forward")
 
         await asyncio.sleep(0.5)
 
-    await log(
-        f"✅ {users_received} users received forward with meme: #{meme.id}", context.bot
-    )
+    await log(f"✅ {users_received} users received forward", context.bot)
