@@ -52,6 +52,7 @@ from src.tgbot.handlers.chat.feedback import (
     handle_feedback_message,
     handle_feedback_reply,
 )
+from src.tgbot.handlers.chat.reaction import give_random_reaction
 from src.tgbot.handlers.moderator import get_meme, meme_source
 from src.tgbot.handlers.stats.stats import handle_stats
 from src.tgbot.handlers.stats.wrapped import handle_wrapped, handle_wrapped_button
@@ -71,7 +72,7 @@ def add_handlers(application: Application) -> None:
         CommandHandler(
             "start",
             start.handle_start,
-            filters=filters.ChatType.PRIVATE & filters.UpdateType.MESSAGE,
+            filters=filters.ChaftType.PRIVATE & filters.UpdateType.MESSAGE,
         )
     )
 
@@ -238,6 +239,17 @@ def add_handlers(application: Application) -> None:
             & filters.PHOTO
             & filters.SenderChat(TELEGRAM_CHANNEL_EN_CHAT_ID),
             callback=explain_meme_en,
+        )
+    )
+
+    ######################
+    # chat activity
+
+    # set reaction to a reply
+    application.add_handler(
+        MessageHandler(
+            filters=filters.REPLY & filters.ChatType.GROUPS,
+            callback=give_random_reaction,
         )
     )
 
