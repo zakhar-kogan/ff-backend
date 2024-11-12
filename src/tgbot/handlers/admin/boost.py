@@ -10,7 +10,7 @@ async def handle_chat_boost(update: Update, context: ContextTypes.DEFAULT_TYPE) 
     chat_id = update.chat_boost.chat.id
 
     await log(
-        f"🚀 User {update.effective_user.id} boosted chat {chat_id}.",
+        f"🚀 Someone boosted chat {chat_id}: {update.chat_boost.boost.to_json()}",
         context.bot,
     )
 

@@ -15,7 +15,11 @@ from src.tgbot.user_info import update_user_info_cache
 async def send_stacktrace_to_tg_chat(
     update: Update, context: ContextTypes.DEFAULT_TYPE
 ):
+    if not update.effective_user:
+        pass
+
     user_id = update.effective_user.id
+
     logging.error("Exception while handling an update:", exc_info=context.error)
 
     # if the error is that we can't send them a message,
