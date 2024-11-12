@@ -81,7 +81,7 @@ async def explain_meme_ru(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
     if not subscribed_to_channel:
         return await update.message.reply_text(
-            "😵‍💫 Не вижу тебя в канале. Надо подписаться -> @ "
+            "😵‍💫 Не вижу тебя в канале. Надо подписаться -> @fastfoodmemes"
         )
 
     return await generate_and_send_meme_explanation(update.message)
