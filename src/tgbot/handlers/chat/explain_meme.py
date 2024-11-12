@@ -54,6 +54,11 @@ async def explain_meme_ru(update: Update, context: ContextTypes.DEFAULT_TYPE):
             bot=context.bot,
         )
 
+    await context.bot.send_chat_action(
+        chat_id=update.effective_user.id,
+        action="typing",
+    )
+
     # check that the meme was sent by our bot or the correct user
 
     our_channel = (
