@@ -55,7 +55,7 @@ async def explain_meme_ru(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
 
     await context.bot.send_chat_action(
-        chat_id=update.effective_user.id,
+        chat_id=update.effective_chat.id,
         action="typing",
     )
 
