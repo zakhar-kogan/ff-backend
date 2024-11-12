@@ -96,7 +96,7 @@ class VkGroupScraper(Scraper):
             url=get_post_link(post, self.vk_source_link),
             comments=post["comments"]["count"],
             likes=post["likes"]["count"],
-            views=post["views"]["count"],
+            views=post["views"]["count"] if post.get("views") else 0,
             reposts=post["reposts"]["count"],
         )
 

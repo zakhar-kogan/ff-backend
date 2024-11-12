@@ -112,7 +112,7 @@ meme_raw_vk = Table(
     Column("date", DateTime, nullable=False),
     Column("content", String),
     Column("media", JSONB),
-    Column("views", Integer, nullable=False),
+    Column("views", Integer, nullable=False),  # TODO: make nullable
     Column("likes", Integer, nullable=False),
     Column("reposts", Integer, nullable=False),
     Column("comments", Integer, nullable=False),
