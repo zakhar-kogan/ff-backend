@@ -159,7 +159,7 @@ async def get_fans_of_user_id(user_id: int) -> list[dict[str, Any]]:
 async def get_meme_uploader_user_id(meme_id: int) -> int | None:
     query = f"""
         SELECT
-            S.added_by
+            S.added_by::INT
         FROM meme M
         INNER JOIN meme_source S
             ON S.id = M.meme_source_id
