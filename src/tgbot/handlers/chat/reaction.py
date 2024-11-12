@@ -4,7 +4,7 @@ import random
 from telegram import Update
 from telegram.ext import ContextTypes
 
-reactions = ["👍", "😂", "😮", "😢", "😡", "🎉", "👏", "❤️", "🔥"]
+from src.tgbot.constants import MESSAGE_REACTIONS
 
 
 async def give_random_reaction(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -14,5 +14,5 @@ async def give_random_reaction(update: Update, context: ContextTypes.DEFAULT_TYP
     """
     await asyncio.sleep(random.random() * 5)
 
-    reaction = random.choice(reactions)
-    await update.message.set_reaction(reaction=reaction)
+    reaction = random.choice(MESSAGE_REACTIONS)
+    await update.message.set_reaction(reaction=reaction, is_big=True)
