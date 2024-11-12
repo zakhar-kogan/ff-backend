@@ -12,6 +12,9 @@ async def give_random_reaction(update: Update, context: ContextTypes.DEFAULT_TYP
     Explain a tg channel post to the user
     Handle message from channel in a chat
     """
+    if random.random() > 0.1:
+        return  # set reaction only to lucky replies
+
     await asyncio.sleep(random.random() * 5)
 
     reaction = random.choice(MESSAGE_REACTIONS)
