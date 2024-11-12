@@ -72,7 +72,7 @@ def add_handlers(application: Application) -> None:
         CommandHandler(
             "start",
             start.handle_start,
-            filters=filters.ChaftType.PRIVATE & filters.UpdateType.MESSAGE,
+            filters=filters.ChatType.PRIVATE & filters.UpdateType.MESSAGE,
         )
     )
 
