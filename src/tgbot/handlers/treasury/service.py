@@ -84,7 +84,7 @@ async def check_if_treasury_trx_exists(
         exists(treasury_trx)
         .where(treasury_trx.c.user_id == user_id)
         .where(treasury_trx.c.type == type)
-        .where(treasury_trx.c.external_id == external_id)
+        .where(treasury_trx.c.external_id == str(external_id))
         .select()
     )
     res = await execute(exists_statement)
