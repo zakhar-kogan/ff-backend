@@ -15,6 +15,11 @@ from src.tgbot.user_info import get_user_info, update_user_info_cache
 async def handle_show_user_info(
     update: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> None:
+    await context.bot.send_chat_action(
+        chat_id=update.effective_user.id,
+        action="typing",
+    )
+
     """Sends you the meme by it's id"""
     user = await get_user_info(update.effective_user.id)
     if user["type"] != UserType.ADMIN:
