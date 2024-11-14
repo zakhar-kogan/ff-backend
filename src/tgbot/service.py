@@ -46,7 +46,7 @@ async def save_tg_user(
 
 async def create_user(
     id: int,
-) -> None:
+) -> dict:
     """
     Creates a row in user table
     If a user is already exist, it updates user's status (real sql below)

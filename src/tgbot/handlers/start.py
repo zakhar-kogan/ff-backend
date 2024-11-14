@@ -13,13 +13,12 @@ from src.tgbot.logs import log
 from src.tgbot.service import (
     create_user,
     get_tg_user_by_id,
-    log_user_deep_link,
     save_tg_user,
 )
 from src.tgbot.user_info import update_user_info_cache
 
 
-async def save_user_data(user_id: int, update: Update, deep_link: str | None):
+async def save_user_data(user_id: int, update: Update, deep_link: str | None) -> dict:
     tg_user = await get_tg_user_by_id(user_id)
     language_code = update.effective_user.language_code
 
@@ -38,7 +37,6 @@ async def save_user_data(user_id: int, update: Update, deep_link: str | None):
     )
 
     user = await create_user(id=user_id)
-    await log_user_deep_link(user_id, deep_link)
     return user
 
 

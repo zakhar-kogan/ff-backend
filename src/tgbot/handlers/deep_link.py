@@ -7,7 +7,12 @@ from src.tgbot.handlers.treasury.constants import TrxType
 from src.tgbot.handlers.treasury.payments import pay_if_not_paid_with_alert
 from src.tgbot.logs import log
 from src.tgbot.senders.invite import send_successfull_invitation_alert
-from src.tgbot.service import get_tg_user_by_id, get_user_by_id, update_user
+from src.tgbot.service import (
+    get_tg_user_by_id,
+    get_user_by_id,
+    log_user_deep_link,
+    update_user,
+)
 
 LINK_UNDER_MEME_PATTERN = r"s_\d+_\d+"
 
@@ -16,6 +21,10 @@ async def handle_deep_link_used(
     bot: Bot, invited_user: dict, invited_user_name: str, deep_link: str
 ):
     """Handle deep link usage, including user invitations."""
+    await log_user_deep_link(invited_user["id"], deep_link)
+
+    # IDEA: reward users for deep link usage
+
     if not re.match(LINK_UNDER_MEME_PATTERN, deep_link):
         return
 
