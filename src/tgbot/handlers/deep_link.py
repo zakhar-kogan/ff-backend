@@ -39,8 +39,17 @@ async def handle_deep_link_used(
     if not invitor_user:
         return  # Invitor doesn't exist
 
-    if not invited_user.get("inviter_id"):
-        await update_user(invited_user["id"], inviter_id=invitor_user_id)
+    if invited_user.get("inviter_id"):
+        # user was already invited
+        return
+
+    # Check if user was created in last minute
+    created_at = datetime.datetime.fromisoformat(str(invited_user["created_at"]))
+    one_minute_ago = datetime.datetime.now() - datetime.timedelta(minutes=1)
+    if created_at < one_minute_ago:
+        return
+
+    await update_user(invited_user["id"], inviter_id=invitor_user_id)
 
     if invitor_user["type"] == UserType.BLOCKED_BOT:
         return await log(
