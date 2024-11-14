@@ -53,10 +53,10 @@ but his type is {invitor_user["type"]}
     await update_user(invited_user["id"], type=UserType.USER)
     await send_successfull_invitation_alert(invitor_user_id, invited_user_name)
 
-    invitor_user_tg = await get_tg_user_by_id(invitor_user_id)
+    invited_user_tg = await get_tg_user_by_id(invited_user["id"])
     trx_type = (
         TrxType.USER_INVITER_PREMIUM
-        if invitor_user_tg and invitor_user_tg.get("is_premium")
+        if invited_user_tg and invited_user_tg.get("is_premium")
         else TrxType.USER_INVITER
     )
 
