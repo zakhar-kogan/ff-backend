@@ -44,8 +44,9 @@ async def handle_deep_link_used(
         return
 
     # Check if user was created in last minute
-    created_at = datetime.datetime.fromisoformat(str(invited_user["created_at"]))
-    one_minute_ago = datetime.datetime.now() - datetime.timedelta(minutes=1)
+    created_at = invited_user["created_at"]
+    one_minute_ago = str(datetime.datetime.now() - datetime.timedelta(minutes=1))
+    await log(f"created_at: {created_at}, one_minute_ago: {one_minute_ago}")
     if created_at < one_minute_ago:
         return
 
