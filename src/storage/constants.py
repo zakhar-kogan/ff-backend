@@ -32,6 +32,7 @@ class MemeSourceStatus(str, Enum):
     IN_MODERATION = "in_moderation"
     PARSING_ENABLED = "parsing_enabled"
     PARSING_DISABLED = "parsing_disabled"
+    SNOOZED = "snoozed"
 
 
 class MemeStatus(str, Enum):
@@ -45,3 +46,5 @@ class MemeStatus(str, Enum):
 
     WAITING_REVIEW = "waiting_review"
     REJECTED = "rejected"
+
+    SNOOZED = "snoozed"  # we don't want to show the memes from this meme_source

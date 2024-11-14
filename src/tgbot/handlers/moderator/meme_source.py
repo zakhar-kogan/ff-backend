@@ -14,8 +14,11 @@ from src.tgbot.senders.keyboards import (
 )
 from src.tgbot.senders.utils import send_or_edit
 from src.tgbot.service import (
+    get_meme_source_by_id,
     get_meme_source_stats_by_id,
     get_or_create_meme_source,
+    snooze_memes_of_meme_source,
+    unsnooze_memes_of_meme_source,
     update_meme_source,
 )
 from src.tgbot.user_info import get_user_info
@@ -89,6 +92,17 @@ async def handle_meme_source_change_status(
     args = update.callback_query.data.split(":")
     meme_source_id, status = int(args[1]), args[3]
 
+    meme_source = await get_meme_source_by_id(meme_source_id)
+    if (
+        meme_source["status"] == MemeSourceStatus.SNOOZED
+        and status == MemeSourceStatus.PARSING_ENABLED
+    ):
+        # unsnooze memes
+        nmemes_updated = await unsnooze_memes_of_meme_source(meme_source_id)
+        await update.effective_chat.send_message(
+            f"Unsnoozed {nmemes_updated} memes of {meme_source_id}"
+        )
+
     meme_source = await update_meme_source(meme_source_id, status=status)
     if meme_source is None:
         await update.callback_query.answer(f"Meme source {meme_source_id} not found")
@@ -108,6 +122,13 @@ async def handle_meme_source_change_status(
             await parse_vk_source(meme_source_id, meme_source["url"])
         elif meme_source["type"] == MemeSourceType.TELEGRAM:
             await parse_telegram_source(meme_source_id, meme_source["url"])
+
+    if status == MemeSourceStatus.SNOOZED:
+        # set memes of a source status to snoozed
+        nmemes_updated = await snooze_memes_of_meme_source(meme_source["id"])
+        await update.effective_chat.send_message(
+            f"Snoozed {nmemes_updated} memes of {meme_source_id}"
+        )
 
 
 def _get_meme_source_info(meme_source: dict) -> str:

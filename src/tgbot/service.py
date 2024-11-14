@@ -379,3 +379,25 @@ async def log_user_deep_link(user_id: int, deep_link: str | None) -> None:
         deep_link=deep_link,
     )
     await execute(insert_query)
+
+
+async def snooze_memes_of_meme_source(meme_source_id: int) -> int:
+    update_statement = (
+        meme.update()
+        .where(meme.c.meme_source_id == meme_source_id)
+        .where(meme.c.status == MemeStatus.OK)
+        .values(status=MemeStatus.SNOOZED)
+    )
+    result = await execute(update_statement)
+    return result.rowcount
+
+
+async def unsnooze_memes_of_meme_source(meme_source_id: int) -> int:
+    update_statement = (
+        meme.update()
+        .where(meme.c.meme_source_id == meme_source_id)
+        .where(meme.c.status == MemeStatus.SNOOZED)
+        .values(status=MemeStatus.OK)
+    )
+    result = await execute(update_statement)
+    return result.rowcount
