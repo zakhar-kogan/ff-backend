@@ -42,38 +42,42 @@ async def handle_deep_link_used(
     if not invited_user.get("inviter_id"):
         await update_user(invited_user["id"], inviter_id=invitor_user_id)
 
-    if invitor_user["type"] != UserType.WAITLIST and invited_user["type"] in [
-        UserType.WAITLIST,
-        UserType.BLOCKED_BOT,
-    ]:
-        await update_user(invited_user["id"], type=UserType.USER)
-        await send_successfull_invitation_alert(invitor_user_id, invited_user_name)
-
-        invitor_user_tg = await get_tg_user_by_id(invitor_user_id)
-        trx_type = (
-            TrxType.USER_INVITER_PREMIUM
-            if invitor_user_tg and invitor_user_tg.get("is_premium")
-            else TrxType.USER_INVITER
+    if invitor_user["type"] == UserType.BLOCKED_BOT:
+        return await log(
+            f"""
+❌ {invited_user_name} was invited by #{invitor_user_id}
+but his type is {invitor_user["type"]}
+        """
         )
 
+    await update_user(invited_user["id"], type=UserType.USER)
+    await send_successfull_invitation_alert(invitor_user_id, invited_user_name)
+
+    invitor_user_tg = await get_tg_user_by_id(invitor_user_id)
+    trx_type = (
+        TrxType.USER_INVITER_PREMIUM
+        if invitor_user_tg and invitor_user_tg.get("is_premium")
+        else TrxType.USER_INVITER
+    )
+
+    res = await pay_if_not_paid_with_alert(
+        bot,
+        invitor_user_id,
+        trx_type,
+        external_id=str(invited_user["id"]),
+    )
+
+    await log(f"🤝 #{invitor_user_id} invited {invited_user_name}")
+
+    if not res:
+        # already rewarded for invitation
+        # -- invite for  sharing
+        today = datetime.today().date().strftime("%Y-%m-%d")
         res = await pay_if_not_paid_with_alert(
             bot,
             invitor_user_id,
-            trx_type,
-            external_id=str(invited_user["id"]),
+            type=TrxType.MEME_SHARED,
+            external_id=today,
         )
 
-        await log(f"🤝 #{invitor_user_id} invited {invited_user_name}")
-
-        if not res:
-            # already rewarded for invitation
-            # -- invite for  sharing
-            today = datetime.today().date().strftime("%Y-%m-%d")
-            res = await pay_if_not_paid_with_alert(
-                bot,
-                invitor_user_id,
-                type=TrxType.MEME_SHARED,
-                external_id=today,
-            )
-
-            await log(f"💌 #{invitor_user_id} shared meme to {invited_user_name}")
+        await log(f"💌 #{invitor_user_id} shared meme to {invited_user_name}")
