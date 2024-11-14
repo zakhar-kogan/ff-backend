@@ -24,9 +24,9 @@ async def handle_deep_link_used(
     """Handle deep link usage, including user invitations."""
     await log_user_deep_link(invited_user["id"], deep_link)
 
-    # if invited_user.get("inviter_id"):
-    #     # user was already invited
-    #     return
+    if invited_user.get("inviter_id"):
+        # user was already invited
+        return
 
     # IDEA: reward users for deep link usage
 
@@ -43,14 +43,14 @@ async def handle_deep_link_used(
     if not invitor_user:
         return  # Invitor doesn't exist
 
-    # Check if user was created in last minute
-    created_at = invited_user["created_at"]
-    one_minute_ago = str(datetime.datetime.now() - datetime.timedelta(minutes=1))
-    await log(f"created_at: {created_at}, one_minute_ago: {one_minute_ago}")
-    if created_at < one_minute_ago:
-        return
-
     await update_user(invited_user["id"], inviter_id=invitor_user_id)
+
+    # Check if user was created in last minute
+    # created_at = invited_user["created_at"]
+    # one_minute_ago = str(datetime.datetime.now() - datetime.timedelta(minutes=1))
+    # await log(f"created_at: {created_at}, one_minute_ago: {one_minute_ago}")
+    # if created_at < one_minute_ago:
+    #     return
 
     if invitor_user["type"] == UserType.BLOCKED_BOT:
         return await log(
