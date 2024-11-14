@@ -50,9 +50,6 @@ but his type is {invitor_user["type"]}
         """
         )
 
-    await update_user(invited_user["id"], type=UserType.USER)
-    await send_successfull_invitation_alert(invitor_user_id, invited_user_name)
-
     invited_user_tg = await get_tg_user_by_id(invited_user["id"])
     trx_type = (
         TrxType.USER_INVITER_PREMIUM
@@ -67,9 +64,11 @@ but his type is {invitor_user["type"]}
         external_id=str(invited_user["id"]),
     )
 
-    await log(f"🤝 #{invitor_user_id} invited {invited_user_name}")
+    if res:
+        await send_successfull_invitation_alert(invitor_user_id, invited_user_name)
+        await log(f"🤝 #{invitor_user_id} invited {invited_user_name}")
 
-    if not res:
+    else:
         # already rewarded for invitation
         # -- invite for  sharing
         today = datetime.today().date().strftime("%Y-%m-%d")
