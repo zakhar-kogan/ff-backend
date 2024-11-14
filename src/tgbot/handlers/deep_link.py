@@ -1,3 +1,4 @@
+import datetime
 import re
 
 from telegram import Bot
@@ -55,7 +56,7 @@ async def handle_deep_link_used(
             else TrxType.USER_INVITER
         )
 
-        await pay_if_not_paid_with_alert(
+        res = await pay_if_not_paid_with_alert(
             bot,
             invitor_user_id,
             trx_type,
@@ -63,3 +64,16 @@ async def handle_deep_link_used(
         )
 
         await log(f"🤝 #{invitor_user_id} invited {invited_user_name}")
+
+        if not res:
+            # already rewarded for invitation
+            # -- invite for  sharing
+            today = datetime.today().date().strftime("%Y-%m-%d")
+            res = await pay_if_not_paid_with_alert(
+                bot,
+                invitor_user_id,
+                type=TrxType.MEME_SHARED,
+                external_id=today,
+            )
+
+            await log(f"💌 #{invitor_user_id} shared meme to {invited_user_name}")

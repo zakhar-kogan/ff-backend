@@ -23,7 +23,7 @@ async def pay_if_not_paid(
     user_id: int,
     type: TrxType,
     external_id: str,
-) -> None:
+) -> int | None:
     if await check_if_treasury_trx_exists(user_id, type, external_id=external_id):
         return
 
@@ -42,19 +42,20 @@ async def pay_if_not_paid_with_alert(
     user_id: int,
     type: TrxType,
     external_id: str,
-) -> None:
+) -> int | None:
     # TODO: atomic?
-    if not await pay_if_not_paid(user_id, type, external_id):
-        return
+    res = await pay_if_not_paid(user_id, type, external_id)
+    if res:
+        await bot.send_message(
+            chat_id=user_id,
+            text=f"""
+    💳 /b: +<b>{PAYOUTS[type]} 🍔</b> for <b>{TRX_TYPE_DESCRIPTIONS[type]}</b>!
+            """,
+            parse_mode="HTML",
+        )
 
-    await bot.send_message(
-        chat_id=user_id,
-        text=f"""
-💳 /b: +<b>{PAYOUTS[type]} 🍔</b> for <b>{TRX_TYPE_DESCRIPTIONS[type]}</b>!
-        """,
-        parse_mode="HTML",
-    )
+        asyncio.create_task(
+            log(f"💳 {user_id}: +{PAYOUTS[type]} 🍔 for {TRX_TYPE_DESCRIPTIONS[type]}")
+        )
 
-    asyncio.create_task(
-        log(f"💳 {user_id}: +{PAYOUTS[type]} 🍔 for {TRX_TYPE_DESCRIPTIONS[type]}")
-    )
+    return res
