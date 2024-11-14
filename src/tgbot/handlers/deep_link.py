@@ -24,9 +24,9 @@ async def handle_deep_link_used(
     """Handle deep link usage, including user invitations."""
     await log_user_deep_link(invited_user["id"], deep_link)
 
-    if invited_user.get("inviter_id"):
-        # user was already invited
-        return
+    # if invited_user.get("inviter_id"):
+    #     # user was already invited
+    #     return
 
     # IDEA: reward users for deep link usage
 
