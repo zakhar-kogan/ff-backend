@@ -24,6 +24,10 @@ async def handle_deep_link_used(
     """Handle deep link usage, including user invitations."""
     await log_user_deep_link(invited_user["id"], deep_link)
 
+    if invited_user.get("inviter_id"):
+        # user was already invited
+        return
+
     # IDEA: reward users for deep link usage
 
     if not re.match(LINK_UNDER_MEME_PATTERN, deep_link):
@@ -38,10 +42,6 @@ async def handle_deep_link_used(
     invitor_user = await get_user_by_id(invitor_user_id)
     if not invitor_user:
         return  # Invitor doesn't exist
-
-    if invited_user.get("inviter_id"):
-        # user was already invited
-        return
 
     # Check if user was created in last minute
     created_at = invited_user["created_at"]
