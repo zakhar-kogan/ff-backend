@@ -44,7 +44,9 @@ async def send_tokens_to_reply(update: Update, context: ContextTypes.DEFAULT_TYP
             pass
         return
 
-    # to_user_id = update.message.reply_to_message.effective_user.id
+    to_user_id = update.message.reply_to_message.from_user.id
+    if user_id == to_user_id:
+        return  # no need to send tokens to yourself
 
     # add a treasury transaction: -send, +send
     # send a private messages to both users
