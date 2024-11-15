@@ -54,7 +54,10 @@ async def pay_if_not_paid_with_alert(
             parse_mode="HTML",
         )
 
-        user_name = msg.chat.username or msg.chat.effective_name
+        if msg.chat.username:
+            user_name = "@" + msg.chat.username
+        else:
+            user_name = msg.chat.effective_name
 
         # ruff: noqa
         asyncio.create_task(
