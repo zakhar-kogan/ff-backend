@@ -46,7 +46,7 @@ async def pay_if_not_paid_with_alert(
     # TODO: atomic?
     res = await pay_if_not_paid(user_id, type, external_id)
     if res:
-        await bot.send_message(
+        msg = await bot.send_message(
             chat_id=user_id,
             text=f"""
     💳 /b: +<b>{PAYOUTS[type]} 🍔</b> for <b>{TRX_TYPE_DESCRIPTIONS[type]}</b>!
@@ -54,8 +54,13 @@ async def pay_if_not_paid_with_alert(
             parse_mode="HTML",
         )
 
+        user_name = msg.effective_user.name
+
+        # ruff: noqa
         asyncio.create_task(
-            log(f"💳 {user_id}: +{PAYOUTS[type]} 🍔 for {TRX_TYPE_DESCRIPTIONS[type]}")
+            log(
+                f"💳 {user_name}/{user_id}: +{PAYOUTS[type]} 🍔 for {TRX_TYPE_DESCRIPTIONS[type]}"
+            )
         )
 
     return res
