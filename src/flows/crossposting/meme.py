@@ -47,7 +47,7 @@ CTAS = [
 ]
 
 
-def _get_caption_for_crossposting_meme(meme: MemeData, channel: Channel) -> str:
+def _get_ru_caption_for_crossposting_meme(meme: MemeData, channel: Channel) -> str:
     cta = random.choice(CTAS)
     ref_link = "https://t.me/ffmemesbot?start=sc_{}_{}".format(meme.id, channel.value)
 
@@ -114,7 +114,7 @@ async def post_meme_to_tgchannelru():
     next_meme = MemeData(**meme_data)
     logger.info(f"Next meme for TG Channel RU: {next_meme.id}")
 
-    next_meme.caption = _get_en_caption_for_crossposting_meme(
+    next_meme.caption = _get_ru_caption_for_crossposting_meme(
         next_meme, Channel.TG_CHANNEL_RU
     )
 
