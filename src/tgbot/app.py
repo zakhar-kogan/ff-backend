@@ -58,6 +58,7 @@ from src.tgbot.handlers.chat.feedback import (
     handle_feedback_reply,
 )
 from src.tgbot.handlers.chat.reaction import give_random_reaction
+from src.tgbot.handlers.chat.send_tokens import send_tokens_to_reply
 from src.tgbot.handlers.moderator import get_meme, meme_source
 from src.tgbot.handlers.stats.stats import handle_stats
 from src.tgbot.handlers.stats.wrapped import handle_wrapped, handle_wrapped_button
@@ -201,7 +202,6 @@ def add_handlers(application: Application) -> None:
     )
 
     ############## admin
-
     application.add_handler(
         MessageHandler(
             filters=filters.ChatType.PRIVATE
@@ -249,6 +249,13 @@ def add_handlers(application: Application) -> None:
 
     ######################
     # chat activity
+
+    application.add_handler(
+        MessageHandler(
+            filters=filters.REPLY & filters.ChatType.GROUPS,
+            callback=send_tokens_to_reply,
+        )
+    )
 
     # set reaction to a reply
     application.add_handler(
