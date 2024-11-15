@@ -26,7 +26,9 @@ async def handle_deep_link_used(
 
     if invited_user.get("inviter_id"):
         return await log(
-            f"User #{invited_user['id']}/{invited_user_name} was already invited by #{invited_user['inviter_id']}"
+            f"""
+User #{invited_user['id']}/{invited_user_name}
+was already invited by #{invited_user['inviter_id']}"""
         )
 
     # IDEA: reward users for deep link usage
