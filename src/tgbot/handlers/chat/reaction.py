@@ -12,6 +12,9 @@ async def give_random_reaction(update: Update, context: ContextTypes.DEFAULT_TYP
     Explain a tg channel post to the user
     Handle message from channel in a chat
     """
+    if not update.message:
+        return
+
     if random.random() > 0.1:
         return  # set reaction only to lucky replies
 
