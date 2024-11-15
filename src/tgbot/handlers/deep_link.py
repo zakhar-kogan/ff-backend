@@ -34,6 +34,9 @@ async def handle_invited_user(
     if not invitor_user:
         return  # Invitor doesn't exist
 
+    if invitor_user_id == invited_user["id"]:
+        return  # can't invite yourself
+
     # should not fire, adding just for debugging
     if invited_user.get("inviter_id"):
         return await log(
