@@ -61,6 +61,16 @@ def _get_caption_for_crossposting_meme(meme: MemeData, channel: Channel) -> str:
     return text
 
 
+def _get_en_caption_for_crossposting_meme(meme: MemeData, channel: Channel) -> str:
+    ref_link = "https://t.me/ffmemesbot?start=sc_{}_{}".format(meme.id, channel.value)
+
+    emoji = get_random_emoji()
+    referral_html = f"""{emoji} <i><a href="{ref_link}">Fast Food Memes</a></i>"""
+    caption = escape(meme.caption, quote=False) if meme.caption else ""
+    text = caption + "\n\n" + referral_html
+    return text
+
+
 @flow
 async def post_meme_to_tgchannelen():
     logger = get_run_logger()
@@ -69,7 +79,7 @@ async def post_meme_to_tgchannelen():
     next_meme = MemeData(**meme_data)
     logger.info(f"Next meme for TG Channel EN: {next_meme.id}")
 
-    next_meme.caption = _get_caption_for_crossposting_meme(
+    next_meme.caption = _get_en_caption_for_crossposting_meme(
         next_meme, Channel.TG_CHANNEL_EN
     )
     msg = await send_new_message_with_meme(
@@ -104,7 +114,7 @@ async def post_meme_to_tgchannelru():
     next_meme = MemeData(**meme_data)
     logger.info(f"Next meme for TG Channel RU: {next_meme.id}")
 
-    next_meme.caption = _get_caption_for_crossposting_meme(
+    next_meme.caption = _get_en_caption_for_crossposting_meme(
         next_meme, Channel.TG_CHANNEL_RU
     )
 
