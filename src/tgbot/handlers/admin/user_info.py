@@ -1,4 +1,4 @@
-from telegram import Update
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.constants import ParseMode
 from telegram.ext import (
     ContextTypes,
@@ -10,6 +10,8 @@ from src.tgbot.handlers.admin.service import delete_user, get_user_by_tg_usernam
 from src.tgbot.handlers.stats.stats import get_user_stats_report
 from src.tgbot.handlers.treasury.service import get_user_balance
 from src.tgbot.user_info import get_user_info, update_user_info_cache
+
+DELETE_USER_DATA_CONFIRMATION_CALLBACK = "user_delete_confirm"
 
 
 async def handle_show_user_info(
@@ -50,12 +52,30 @@ balance: {balance} 🍔
     )
 
 
+async def delete_user_data_confirmation_page(
+    update: Update, context: ContextTypes.DEFAULT_TYPE
+) -> None:
+    await update.message.reply_text(
+        "Are you sure?",
+        reply_markup=InlineKeyboardMarkup(
+            [
+                [
+                    InlineKeyboardButton(
+                        "Delete everything",
+                        callback_data=DELETE_USER_DATA_CONFIRMATION_CALLBACK,
+                    )
+                ]
+            ]
+        ),
+    )
+
+
 async def delete_user_data(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Deletes all user data we have for testing purposes"""
-    user = await get_user_info(update.effective_user.id)
-    if user["type"] != UserType.ADMIN:
-        return
+    # user = await get_user_info(update.effective_user.id)
+    # if user["type"] != UserType.ADMIN:
+    #     return
 
     # TODO: "are you sure" button + callback
     await delete_user(update.effective_user.id)
-    await update.message.reply_text("Ciao 👋")
+    await update.message.reply_text("Ciao 👋\n\n --> press /start to try again 👾")

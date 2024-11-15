@@ -45,7 +45,12 @@ from src.tgbot.handlers.admin.broadcast_text import (
     handle_broadcast_text_ru_trigger,
 )
 from src.tgbot.handlers.admin.forward_channel import handle_forwarded_from_tgchannelru
-from src.tgbot.handlers.admin.user_info import delete_user_data, handle_show_user_info
+from src.tgbot.handlers.admin.user_info import (
+    DELETE_USER_DATA_CONFIRMATION_CALLBACK,
+    delete_user_data,
+    delete_user_data_confirmation_page,
+    handle_show_user_info,
+)
 from src.tgbot.handlers.chat.chat_member import handle_chat_member_update
 from src.tgbot.handlers.chat.explain_meme import explain_meme_en, explain_meme_ru
 from src.tgbot.handlers.chat.feedback import (
@@ -368,12 +373,19 @@ def add_handlers(application: Application) -> None:
     )
 
     # delete user data
-    application.add_handler(
-        CommandHandler(
-            "delete",
-            delete_user_data,
-            filters=filters.ChatType.PRIVATE & filters.UpdateType.MESSAGE,
-        )
+    application.add_handlers(
+        [
+            CommandHandler(
+                "delete",
+                delete_user_data_confirmation_page,
+                filters=filters.ChatType.PRIVATE & filters.UpdateType.MESSAGE,
+            ),
+            CallbackQueryHandler(
+                delete_user_data,
+                pattern=DELETE_USER_DATA_CONFIRMATION_CALLBACK,
+                filters=filters.ChatType.PRIVATE,
+            ),
+        ]
     )
 
     # handle boosts of a chat
