@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from prefect.client.schemas.schedules import CronSchedule
 
 from src.config import settings
@@ -7,6 +9,7 @@ from src.flows.crossposting.meme import (
 )
 
 deployment_crossposting_tgchannelru = post_meme_to_tgchannelru.from_source(
+    source=str(Path(__file__).parent.parent),
     entrypoint="src/flows/crossposting/meme.py:post_meme_to_tgchannelru",
 ).deploy(
     name="post_meme_to_tgchannelru",
@@ -16,6 +19,7 @@ deployment_crossposting_tgchannelru = post_meme_to_tgchannelru.from_source(
 
 
 deployment_crossposting_tgchannelen = post_meme_to_tgchannelen.from_source(
+    source=str(Path(__file__).parent.parent),
     entrypoint="src/flows/crossposting/meme.py:post_meme_to_tgchannelen",
 ).deploy(
     name="post_meme_to_tgchannelen",
