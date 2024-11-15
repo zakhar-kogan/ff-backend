@@ -75,7 +75,14 @@ async def handle_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     user, created = await save_user_data(user_id, update, deep_link)
     user_info = await update_user_info_cache(user_id)
     await log_user_deep_link(user_id, deep_link)
-    await log_start_event(update, user_info, deep_link, language_code, context.bot)
+    await log_start_event(
+        update,
+        user_info,
+        deep_link,
+        language_code,
+        context.bot,
+        created,
+    )
 
     if created:  # new user:
         await init_user_languages_from_tg_user(update.effective_user)
