@@ -35,7 +35,7 @@ async def send_tokens_to_reply(update: Update, context: ContextTypes.DEFAULT_TYP
     balance = await get_user_balance(user_id)
 
     if balance < to_send:
-        msg = await update.message.reply_text("У тебя нет столько бургиров.....")
+        msg = await update.message.reply_text("У тебя нет столько бургеров.....")
         await asyncio.sleep(5)
         await msg.delete()
         try:
@@ -44,7 +44,20 @@ async def send_tokens_to_reply(update: Update, context: ContextTypes.DEFAULT_TYP
             pass
         return
 
-    to_user_id = update.message.reply_to_message.from_user.id
+    to_user_tg = update.message.reply_to_message.from_user
+    if to_user_tg.is_bot:
+        msg = await update.message.reply_text(
+            "Мне не нужны твои бургеры, я и есть бургер"
+        )
+        await asyncio.sleep(5)
+        await msg.delete()
+        try:
+            await update.message.delete()
+        except BadRequest:
+            pass
+        return
+
+    to_user_id = to_user_tg.id
     if user_id == to_user_id:
         return  # no need to send tokens to yourself
 
