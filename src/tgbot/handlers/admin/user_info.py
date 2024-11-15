@@ -55,8 +55,9 @@ balance: {balance} 🍔
 async def delete_user_data_confirmation_page(
     update: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> None:
+    name = update.effective_user.name
     await update.message.reply_text(
-        "Are you sure?",
+        f"Going to erase all data about {name}. \n\nAre you sure?",
         reply_markup=InlineKeyboardMarkup(
             [
                 [

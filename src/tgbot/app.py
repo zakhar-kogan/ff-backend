@@ -383,7 +383,6 @@ def add_handlers(application: Application) -> None:
             CallbackQueryHandler(
                 delete_user_data,
                 pattern=DELETE_USER_DATA_CONFIRMATION_CALLBACK,
-                filters=filters.ChatType.PRIVATE,
             ),
         ]
     )
