@@ -44,31 +44,37 @@ async def save_tg_user(
     await execute(insert_statement)
 
 
-async def create_user(
+async def create_or_update_user(
     id: int,
-) -> dict:
+) -> tuple[dict, bool]:
     """
-    Creates a row in user table
-    If a user is already exist, it updates user's status (real sql below)
+    Creates or updates a row in user table.
+    Returns tuple of (user dict, bool) where bool
+    indicates if user was created (True) or updated (False).
     """
     sql = f"""
-        INSERT
-        INTO "user"
-        (id, type, last_active_at)
-        VALUES ({id}, '{UserType.USER.value}', NOW())
-        ON CONFLICT(id)
-        DO UPDATE SET
-            blocked_bot_at = NULL,
-            last_active_at = NOW(),
-            type = CASE
-                WHEN "user".type = '{UserType.BLOCKED_BOT.value}'
-                    THEN '{UserType.USER.value}'
-                ELSE "user".type
-            END
-        RETURNING "user".*
+        WITH upsert AS (
+            INSERT
+            INTO "user"
+            (id, type, last_active_at)
+            VALUES ({id}, '{UserType.USER.value}', NOW())
+            ON CONFLICT(id)
+            DO UPDATE SET
+                blocked_bot_at = NULL,
+                last_active_at = NOW(),
+                type = CASE
+                    WHEN "user".type = '{UserType.BLOCKED_BOT.value}'
+                        THEN '{UserType.USER.value}'
+                    ELSE "user".type
+                END
+            RETURNING "user".*, (xmax = 0) as created
+        )
+        SELECT *, created FROM upsert
     """
 
-    return await fetch_one(text(sql))
+    result = await fetch_one(text(sql))
+    created = result.pop("created")
+    return result, created
 
 
 async def get_user_by_id(
