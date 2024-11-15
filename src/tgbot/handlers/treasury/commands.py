@@ -98,7 +98,11 @@ You:
                 "\nTo see your place in the leaderboard, set your /nickname ⬅️\n\n"
             )
 
-    return await update.message.reply_text(LEADERBOARD_TEXT, parse_mode=ParseMode.HTML)
+    return await update.message.reply_text(
+        LEADERBOARD_TEXT,
+        parse_mode=ParseMode.HTML,
+        disable_web_page_preview=True,
+    )
 
 
 async def handle_change_nickname(
@@ -137,6 +141,7 @@ Your public nickname is now: <b>{nickname}</b>.
 /leaderboard /balance /lang /chat
         """,
         parse_mode=ParseMode.HTML,
+        disable_web_page_preview=True,
     )
 
     await update_user_info_cache(update.effective_user.id)
