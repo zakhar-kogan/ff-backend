@@ -103,5 +103,5 @@ async def handle_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
             prev_reaction_id=None,
         )
 
-        await handle_shared_meme_reward(context.bot, deep_link)
+        await handle_shared_meme_reward(context.bot, user_id, deep_link)
         return

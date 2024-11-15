@@ -73,12 +73,19 @@ but his type is {invitor_user["type"]}
         await log(f"🤝 #{invitor_user_id} invited {invited_user_name}")
 
 
-async def handle_shared_meme_reward(bot: Bot, deep_link: str | None):
+async def handle_shared_meme_reward(
+    bot: Bot,
+    clicked_user_id: int,
+    deep_link: str | None,
+):
     if not deep_link or not re.match(LINK_UNDER_MEME_PATTERN, deep_link):
         return
 
     _, user_id, _ = deep_link.split("_")
     invitor_user_id = int(user_id)
+
+    if clicked_user_id == invitor_user_id:
+        return  # don't reward clicking on your links
 
     today = datetime.today().date().strftime("%Y-%m-%d")
     await pay_if_not_paid_with_alert(
