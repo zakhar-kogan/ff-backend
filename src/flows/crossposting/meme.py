@@ -1,3 +1,4 @@
+import random
 from html import escape
 
 from prefect import flow, get_run_logger
@@ -29,15 +30,35 @@ from src.tgbot.senders.utils import get_random_emoji
 # we received lots of negative feedback from users
 # and number of post shares decreased significantly
 
+CTAS = [
+    "Начать смотреть мемы",
+    "Смотри мемы",
+    "Больше мемов",
+    "Мемы тут",
+    "100к мемов",
+    "Анлим мемес",
+    "Отправь маме",
+    "Перешли папе",
+    "Не скучай",
+    "Время мемов",
+    "Отборные мемы",
+    "Нажми сюда",
+    "Кликнул быстро",
+]
+
 
 def _get_caption_for_crossposting_meme(meme: MemeData, channel: Channel) -> str:
-    caption = escape(meme.caption, quote=False) if meme.caption else ""
-
+    cta = random.choice(CTAS)
     ref_link = "https://t.me/ffmemesbot?start=sc_{}_{}".format(meme.id, channel.value)
-    emoji = get_random_emoji()
-    referral_html = f"""{emoji} <i><a href="{ref_link}">Fast Food Memes</a></i>"""
 
-    return caption + "\n\n" + referral_html
+    # emoji = get_random_emoji()
+    # referral_html = f"""{emoji} <i><a href="{ref_link}">Fast Food Memes</a></i>"""
+    # caption = escape(meme.caption, quote=False) if meme.caption else ""
+    # text = caption + "\n\n" + referral_html
+
+    text = cta + ": " + f"""<a href="{ref_link}>🍔🍔🍔</a>"""
+
+    return text
 
 
 @flow
