@@ -1,7 +1,7 @@
 import asyncio
 import re
 
-from telegram import Update
+from telegram import Bot, Update
 from telegram.ext import ContextTypes
 
 from src.tgbot.handlers.deep_link import (
@@ -48,17 +48,23 @@ async def save_user_data(
     return user, created
 
 
-async def log_start_event(update, user_info, deep_link, language_code, context):
-    if deep_link:
-        return asyncio.create_task(
-            log(
-                f"""
+async def log_start_event(
+    update,
+    user_info,
+    deep_link,
+    language_code,
+    bot: Bot,
+    is_new: bool,
+):
+    return asyncio.create_task(
+        log(
+            f"""
 👋 {update.effective_user.name}/#{update.effective_user.id}
-type:{user_info["type"]}, ref:{deep_link}, lang:{language_code}
-        """,
-                context.bot,
-            )
+type:{user_info["type"]}, ref:{deep_link}, lang:{language_code}, new: {is_new}
+    """,
+            bot,
         )
+    )
 
 
 async def handle_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -69,19 +75,18 @@ async def handle_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     user, created = await save_user_data(user_id, update, deep_link)
     user_info = await update_user_info_cache(user_id)
     await log_user_deep_link(user_id, deep_link)
-    await log_start_event(update, user_info, deep_link, language_code, context)
+    await log_start_event(update, user_info, deep_link, language_code, context.bot)
 
     if created:  # new user:
         await init_user_languages_from_tg_user(update.effective_user)
         await handle_language_settings(update, context)
 
-        if deep_link:
-            await handle_invited_user(
-                context.bot,
-                user,
-                update.effective_user.name,
-                deep_link,
-            )
+        await handle_invited_user(
+            context.bot,
+            user,
+            update.effective_user.name,
+            deep_link,
+        )
         return
     else:  # existing user:
         await next_message(

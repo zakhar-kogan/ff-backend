@@ -21,9 +21,9 @@ async def handle_invited_user(
     bot: Bot,
     invited_user: dict,
     invited_user_name: str,
-    deep_link: str,
+    deep_link: str | None,
 ):
-    if not re.match(LINK_UNDER_MEME_PATTERN, deep_link):
+    if not deep_link or not re.match(LINK_UNDER_MEME_PATTERN, deep_link):
         return
 
     _, user_id, _ = deep_link.split("_")
@@ -73,8 +73,8 @@ but his type is {invitor_user["type"]}
         await log(f"🤝 #{invitor_user_id} invited {invited_user_name}")
 
 
-async def handle_shared_meme_reward(bot, deep_link):
-    if not re.match(LINK_UNDER_MEME_PATTERN, deep_link):
+async def handle_shared_meme_reward(bot: Bot, deep_link: str | None):
+    if not deep_link or not re.match(LINK_UNDER_MEME_PATTERN, deep_link):
         return
 
     _, user_id, _ = deep_link.split("_")
