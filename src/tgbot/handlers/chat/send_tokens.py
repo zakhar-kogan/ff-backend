@@ -19,8 +19,8 @@ async def send_tokens_to_reply(update: Update, context: ContextTypes.DEFAULT_TYP
     ):
         return
 
-    if not update.message.text.isdigit():
-        msg = await update.message.reply_text("Нужно указать число)")
+    if not update.message.text[1:].isdigit():
+        msg = await update.message.reply_text("Нужно указать число после плюсика)")
         await asyncio.sleep(5)
         await msg.delete()
         try:
@@ -29,7 +29,7 @@ async def send_tokens_to_reply(update: Update, context: ContextTypes.DEFAULT_TYP
             pass
         return
 
-    to_send = int(update.message.text)
+    to_send = int(update.message.text[1:])
 
     user_id = update.effective_user.id
     balance = await get_user_balance(user_id)

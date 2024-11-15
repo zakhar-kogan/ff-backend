@@ -252,7 +252,7 @@ def add_handlers(application: Application) -> None:
 
     application.add_handler(
         MessageHandler(
-            filters=filters.REPLY & filters.ChatType.GROUPS,
+            filters=filters.REPLY & filters.ChatType.GROUPS & filters.Regex(r"^\+\d+$"),
             callback=send_tokens_to_reply,
         )
     )
