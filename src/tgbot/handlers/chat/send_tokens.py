@@ -40,6 +40,8 @@ async def send_tokens_to_reply(update: Update, context: ContextTypes.DEFAULT_TYP
             pass
         return
 
+    # to_user_id = update.message
+
     # add a treasury transaction: -send, +send
     # send a private messages to both users
 
