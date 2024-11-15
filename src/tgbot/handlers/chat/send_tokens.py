@@ -12,7 +12,11 @@ async def send_tokens_to_reply(update: Update, context: ContextTypes.DEFAULT_TYP
     Explain a tg channel post to the user
     Handle message from channel in a chat
     """
-    if not update.message or not update.message.text:
+    if (
+        not update.message
+        or not update.message.text
+        or not update.message.reply_to_message
+    ):
         return
 
     if not update.message.text.isdigit():
@@ -40,7 +44,7 @@ async def send_tokens_to_reply(update: Update, context: ContextTypes.DEFAULT_TYP
             pass
         return
 
-    # to_user_id = update.message
+    # to_user_id = update.message.reply_to_message.effective_user.id
 
     # add a treasury transaction: -send, +send
     # send a private messages to both users

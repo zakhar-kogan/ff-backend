@@ -9,7 +9,7 @@ from src.flows.crossposting.meme import (
 )
 
 deployment_crossposting_tgchannelru = post_meme_to_tgchannelru.from_source(
-    source=str(Path(__file__).parent.parent / "flows/crossposting"),
+    source=str(Path(__file__).parent.parent / "src/flows/crossposting"),
     entrypoint="meme.py:post_meme_to_tgchannelru",
 ).deploy(
     name="post_meme_to_tgchannelru",
@@ -21,7 +21,7 @@ deployment_crossposting_tgchannelru.apply()
 
 
 deployment_crossposting_tgchannelen = post_meme_to_tgchannelen.from_source(
-    source=str(Path(__file__).parent.parent / "flows/crossposting"),
+    source=str(Path(__file__).parent.parent / "src/flows/crossposting"),
     entrypoint="meme.py:post_meme_to_tgchannelen",
 ).deploy(
     name="post_meme_to_tgchannelen",
