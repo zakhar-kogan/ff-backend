@@ -12,7 +12,7 @@ from telegram.ext import ContextTypes
 from src.config import settings
 from src.flows.storage.memes import (
     add_watermark_to_meme_content,
-    ocr_meme_content,
+    # ocr_meme_content,
     upload_meme_content_to_tg,
 )
 from src.recommendations.service import create_user_meme_reaction
@@ -20,7 +20,7 @@ from src.stats.meme import calculate_meme_reactions_stats
 from src.stats.meme_source import calculate_meme_source_stats
 from src.storage.constants import MemeStatus
 from src.storage.service import (
-    find_meme_duplicate,
+    # find_meme_duplicate,
     update_meme,
 )
 from src.storage.upload import download_meme_content_from_tg
@@ -46,21 +46,22 @@ async def uploaded_meme_auto_review(
     logging.info(f"Downloading meme {meme['id']} content")
     image_bytes = await download_meme_content_from_tg(meme["telegram_file_id"])
 
-    logging.info(f"OCR meme {meme['id']} content")
-    meme = await ocr_meme_content(
-        meme["id"],
-        image_bytes,
-        meme["language_code"],
-    )
-    if meme is None:
-        return await bot.send_message(
-            chat_id=meme_upload["user_id"],
-            reply_to_message_id=meme_upload["message_id"],
-            text="""
-❌ MEME REJECTED:
-Something went wrong when we tried read text on your meme. Just try again.
-            """,
-        )
+    # OCR doesnt work anymore
+    #     logging.info(f"OCR meme {meme['id']} content")
+    #     meme = await ocr_meme_content(
+    #         meme["id"],
+    #         image_bytes,
+    #         meme["language_code"],
+    #     )
+    #     if meme is None:
+    #         return await bot.send_message(
+    #             chat_id=meme_upload["user_id"],
+    #             reply_to_message_id=meme_upload["message_id"],
+    #             text="""
+    # ❌ MEME REJECTED:
+    # Something went wrong when we tried read text on your meme. Just try again.
+    #             """,
+    #         )
 
     logging.info(f"Adding watermark to meme {meme['id']} content")
     watermarked_meme_content = await add_watermark_to_meme_content(
@@ -88,35 +89,35 @@ Something went wrong when we tried to upload your meme to Telegram. Just try aga
             """,
         )
 
-    logging.info(f"Finding duplicates of meme {meme['id']}")
-    duplicate_meme_id = await find_meme_duplicate(
-        meme["id"],
-        meme["ocr_result"]["text"],
-    )
-    if duplicate_meme_id:
-        await update_meme(
-            meme["id"],
-            status=MemeStatus.DUPLICATE,
-            duplicate_of=duplicate_meme_id,
-        )
+    #     logging.info(f"Finding duplicates of meme {meme['id']}")
+    #     duplicate_meme_id = await find_meme_duplicate(
+    #         meme["id"],
+    #         meme["ocr_result"]["text"],
+    #     )
+    #     if duplicate_meme_id:
+    #         await update_meme(
+    #             meme["id"],
+    #             status=MemeStatus.DUPLICATE,
+    #             duplicate_of=duplicate_meme_id,
+    #         )
 
-        # set like for the uploaded meme
-        await create_user_meme_reaction(
-            meme_upload["user_id"],
-            duplicate_meme_id,
-            "uploaded_meme",
-            reaction_id=1,
-            reacted_at=datetime.utcnow(),
-        )
+    #         # set like for the uploaded meme
+    #         await create_user_meme_reaction(
+    #             meme_upload["user_id"],
+    #             duplicate_meme_id,
+    #             "uploaded_meme",
+    #             reaction_id=1,
+    #             reacted_at=datetime.utcnow(),
+    #         )
 
-        return await bot.send_message(
-            chat_id=meme_upload["user_id"],
-            reply_to_message_id=meme_upload["message_id"],
-            text="""
-❌ MEME REJECTED:
-Somebody already submitted this meme, sorry... Try another one.
-            """,
-        )
+    #         return await bot.send_message(
+    #             chat_id=meme_upload["user_id"],
+    #             reply_to_message_id=meme_upload["message_id"],
+    #             text="""
+    # ❌ MEME REJECTED:
+    # Somebody already submitted this meme, sorry... Try another one.
+    #             """,
+    #         )
 
     logging.info(f"Updating meme {meme['id']} status to WAITING_REVIEW")
     meme = await update_meme(
