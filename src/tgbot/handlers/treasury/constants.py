@@ -19,6 +19,9 @@ class TrxType(str, Enum):
 
     MEME_PUBLISHED = "meme_published"
 
+    SEND = "send"
+    RECEIVE = "receive"
+
 
 PAYOUTS = {
     TrxType.MEME_UPLOADER: 5,
