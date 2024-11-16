@@ -634,8 +634,8 @@ async def goat(
             SELECT
                 MS.meme_id,
                 1
-        --			* MS.nlikes / (MS.nmemes_sent + 1.)
-        --			* MS.lr_smoothed
+                    * (MS.nlikes - MS.ndislikes) / (MS.nmemes_sent + 1)
+                    * MS.lr_smoothed
                     * (MS.nlikes + MS.ndislikes) / (MS.nmemes_sent + 1)
                     * CASE WHEN MS.sec_to_react BETWEEN 2 AND 10 THEN 1 ELSE 0.6 END
                     * CASE WHEN MS.invited_count > 0 THEN 1 ELSE 0.8 END
