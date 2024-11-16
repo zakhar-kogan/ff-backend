@@ -96,5 +96,4 @@ async def send_tokens_to_reply(update: Update, context: ContextTypes.DEFAULT_TYP
 
     # update balances
 
-    await _reply_and_delete(update.message, "Отправил, чекате лички 😎")
     await update.message.set_reaction(reaction="👌", is_big=True)
