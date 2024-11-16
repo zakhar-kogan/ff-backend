@@ -1,4 +1,5 @@
 import asyncio
+import random
 
 from telegram import Message, Update
 from telegram.error import BadRequest
@@ -96,4 +97,5 @@ async def send_tokens_to_reply(update: Update, context: ContextTypes.DEFAULT_TYP
 
     # update balances
 
-    await update.message.set_reaction(reaction="👌", is_big=True)
+    reaction = random.choice(["👌", "🕊", "👍", "🎉", "🤝", "😘", "🫡"])
+    await update.message.set_reaction(reaction=reaction, is_big=True)
