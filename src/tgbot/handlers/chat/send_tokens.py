@@ -41,8 +41,9 @@ async def send_tokens_to_reply(update: Update, context: ContextTypes.DEFAULT_TYP
 
     to_send = int(update.message.text[1:])
 
-    user_id = update.effective_user.id
-    balance = await get_user_balance(user_id)
+    from_user_tg = update.effective_user
+    from_user_id = from_user_tg.id
+    balance = await get_user_balance(from_user_id)
 
     if balance < to_send:
         return await _reply_and_delete(
@@ -58,7 +59,7 @@ async def send_tokens_to_reply(update: Update, context: ContextTypes.DEFAULT_TYP
         )
 
     to_user_id = to_user_tg.id
-    if user_id == to_user_id:
+    if from_user_id == to_user_id:
         return  # no need to send tokens to yourself
 
     to_user = await get_user_by_id(to_user_id)
@@ -72,24 +73,24 @@ async def send_tokens_to_reply(update: Update, context: ContextTypes.DEFAULT_TYP
     # add a treasury transaction: -send, +send
     # send a private messages to both users
 
-    await transfer_tokens(user_id, to_user_id, to_send)
+    await transfer_tokens(from_user_id, to_user_id, to_send)
 
-    from_user_balance = await get_user_balance(user_id)
+    from_user_balance = await get_user_balance(from_user_id)
     to_user_balance = await get_user_balance(to_user_id)
 
-    await context.bot.send_message(
-        chat_id=user_id,
+    msend = await context.bot.send_message(
+        chat_id=from_user_id,
         text=f"""
-Бургеры улетели: -{to_send} 🍔
+Отправил {to_user_tg.name}: -{to_send} 🍔
 
 Твой новый баланс: {from_user_balance} 🍔
         """,
     )
 
-    await context.bot.send_message(
+    mreceive = await context.bot.send_message(
         chat_id=to_user_id,
         text=f"""
-Вам прислали бургеры: +{to_send} 🍔
+Вам бургеры от {from_user_tg.name}: +{to_send} 🍔
 
 Новый баланс {to_user_balance} 🍔
         """,
@@ -99,3 +100,10 @@ async def send_tokens_to_reply(update: Update, context: ContextTypes.DEFAULT_TYP
 
     reaction = random.choice(["👌", "🕊", "👍", "🎉", "🤝", "😘", "🫡"])
     await update.message.set_reaction(reaction=reaction, is_big=True)
+
+    await asyncio.sleep(60)
+    try:
+        await msend.delete()
+        await mreceive.delete()
+    except BadRequest:
+        pass
