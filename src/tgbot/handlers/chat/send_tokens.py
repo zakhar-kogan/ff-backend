@@ -41,6 +41,12 @@ async def send_tokens_to_reply(update: Update, context: ContextTypes.DEFAULT_TYP
 
     to_send = int(update.message.text[1:])
 
+    if to_send <= 0:
+        return await _reply_and_delete(
+            update.message,
+            "Ну ты жадный пёс 🐺....................",
+        )
+
     from_user_tg = update.effective_user
     from_user_id = from_user_tg.id
     balance = await get_user_balance(from_user_id)
