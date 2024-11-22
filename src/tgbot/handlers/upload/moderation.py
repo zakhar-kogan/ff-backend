@@ -32,6 +32,7 @@ from src.tgbot.handlers.upload.service import (
     get_meme_raw_upload_by_id,
     update_meme_by_upload_id,
 )
+from src.tgbot.service import get_tg_user_by_id
 from src.tgbot.user_info import get_user_info
 
 UPLOADED_MEME_REIVIEW_CALLBACK_DATA_PATTERN = "upload:{upload_id}:review:{action}"
@@ -150,16 +151,27 @@ def review_keyboard(upload_id: int) -> InlineKeyboardMarkup:
     )
 
 
+def _tg_user_info_to_name(tg_user_info: dict):
+    if tg_user_info.get("username"):
+        return "@" + tg_user_info["username"]
+
+    if tg_user_info.get("last_name"):
+        return tg_user_info["first_name"] + " " + tg_user_info["last_name"]
+
+    return tg_user_info["first_name"]
+
+
 async def send_uploaded_meme_to_manual_review(
     meme: dict[str, Any],
     meme_upload: dict[str, Any],
     bot: Bot,
 ) -> None:
-    user_info = await get_user_info(meme_upload["user_id"])
+    tg_user_info = await get_tg_user_by_id(meme_upload["user_id"])
+    name = _tg_user_info_to_name(tg_user_info)
     meme_lang = SUPPORTED_LANGUAGES.get(meme["language_code"]) or meme["language_code"]
     text = f"""
 👨‍✈️ REVIEW MEME #{meme["id"]}
-<b>Uploaded by</b>: #{meme_upload["user_id"]} {user_info["interface_lang"]}
+<b>Uploaded by</b>: {name} {tg_user_info["interface_lang"]}
 <b>Meme language</b>: {meme_lang}
     """
 
