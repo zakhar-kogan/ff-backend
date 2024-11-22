@@ -233,7 +233,8 @@ def add_handlers(application: Application) -> None:
     application.add_handler(
         MessageHandler(
             filters=filters.Chat([TELEGRAM_CHAT_RU_CHAT_ID, TELEGRAM_MODERATOR_CHAT_ID])
-            & filters.PHOTO,
+            & filters.PHOTO
+            & filters.UpdateType.MESSAGE,
             callback=explain_meme_ru,
         )
     )
@@ -242,7 +243,8 @@ def add_handlers(application: Application) -> None:
         MessageHandler(
             filters=filters.Chat(TELEGRAM_CHAT_EN_CHAT_ID)
             & filters.PHOTO
-            & filters.SenderChat(TELEGRAM_CHANNEL_EN_CHAT_ID),
+            & filters.SenderChat(TELEGRAM_CHANNEL_EN_CHAT_ID)
+            & filters.UpdateType.MESSAGE,
             callback=explain_meme_en,
         )
     )
