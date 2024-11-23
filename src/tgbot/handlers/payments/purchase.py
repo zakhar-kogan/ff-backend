@@ -110,9 +110,9 @@ async def refund_command(update: Update, context: CallbackContext):
     # 2. get back the number of issued tokens
     # 3. if user doesn't have it anymore - decline
 
-    res = await context.bot.refund_star_payment(
+    res: bool = await context.bot.refund_star_payment(
         user_id=update.effective_user.id,
         telegram_payment_charge_id=payment_id,
     )
 
-    await update.message.reply_text(str(res.to_json()))
+    await update.message.reply_text(str(res))

@@ -33,13 +33,28 @@ async def handle_show_balance(
         [
             [
                 InlineKeyboardButton(
-                    "buy 1 🍔",
+                    "buy 100 🍔",
                     callback_data=PURCHASE_TOKEN_CALLBACK_DATA_PATTERN.format(
-                        tokens_to_buy=1
+                        tokens_to_buy=100
                     ),
-                )
+                ),
             ],
-            # [],
+            [
+                InlineKeyboardButton(
+                    "buy 1000 🍔",
+                    callback_data=PURCHASE_TOKEN_CALLBACK_DATA_PATTERN.format(
+                        tokens_to_buy=1000
+                    ),
+                ),
+            ],
+            [
+                InlineKeyboardButton(
+                    "buy 10000 🍔",
+                    callback_data=PURCHASE_TOKEN_CALLBACK_DATA_PATTERN.format(
+                        tokens_to_buy=10000
+                    ),
+                ),
+            ],
         ]
     )
 
