@@ -26,7 +26,7 @@ async def handle_new_token_purchase_request_callback(
     data = update.callback_query.data
     tokens_to_buy = int(data.split("_")[1])
 
-    return send_invoice_buying_coins_for_stars(
+    return await send_invoice_buying_coins_for_stars(
         context.bot,
         update.effective_user.id,
         tokens_to_buy,
