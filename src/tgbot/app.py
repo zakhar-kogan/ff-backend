@@ -65,6 +65,7 @@ from src.tgbot.handlers.payments.purchase import (
     PURCHASE_TOKEN_CALLBACK_DATA_REGEXP,
     handle_new_token_purchase_request_callback,
     precheckout_callback,
+    refund_command,
     successful_payment_callback,
 )
 from src.tgbot.handlers.stats.stats import handle_stats
@@ -180,6 +181,14 @@ def add_handlers(application: Application) -> None:
     application.add_handler(PreCheckoutQueryHandler(precheckout_callback))
     application.add_handler(
         MessageHandler(filters.SUCCESSFUL_PAYMENT, successful_payment_callback)
+    )
+
+    application.add_handler(
+        CommandHandler(
+            "refund",
+            refund_command,
+            filters=filters.ChatType.PRIVATE & filters.UpdateType.MESSAGE,
+        )
     )
 
     ####################
