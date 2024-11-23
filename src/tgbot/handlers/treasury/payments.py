@@ -37,6 +37,26 @@ async def pay_if_not_paid(
     return await get_user_balance(user_id)
 
 
+async def mint_tokens(
+    user_id: int,
+    amount: int,
+    external_id: str,
+):
+    if await check_if_treasury_trx_exists(
+        user_id, TrxType.PURCHASE_TOKEN, external_id=external_id
+    ):
+        return
+
+    _ = await create_treasury_trx(
+        user_id,
+        TrxType.PURCHASE_TOKEN,
+        amount,
+        external_id=external_id,
+    )
+
+    return await get_user_balance(user_id)
+
+
 async def pay_if_not_paid_with_alert(
     bot: Bot,
     user_id: int,

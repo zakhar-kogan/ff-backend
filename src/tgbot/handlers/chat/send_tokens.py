@@ -42,9 +42,11 @@ async def send_tokens_to_reply(update: Update, context: ContextTypes.DEFAULT_TYP
     to_send = int(update.message.text[1:])
 
     if to_send <= 0:
+        wolves = random.randint(1, 5)
+        dotes = random.randint(3, 50)
         return await _reply_and_delete(
             update.message,
-            "Ну ты жадный пёс 🐺....................",
+            f"Ну ты жадный пёс {'🐺' * wolves}{'.' * dotes}",
         )
 
     from_user_tg = update.effective_user

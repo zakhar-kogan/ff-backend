@@ -24,6 +24,8 @@ class TrxType(str, Enum):
 
     BOOSTER_CHANNEL = "booster_channel"
 
+    PURCHASE_TOKEN = "purchase_token"
+
 
 PAYOUTS = {
     TrxType.MEME_UPLOADER: 5,
@@ -56,4 +58,5 @@ TRX_TYPE_DESCRIPTIONS = {
     TrxType.DAILY_REWARD: "daily activity",
     TrxType.MEME_PUBLISHED: "meme published in our channel",
     TrxType.BOOSTER_CHANNEL: "boosting the channel",
+    TrxType.PURCHASE_TOKEN: "token purchase",
 }

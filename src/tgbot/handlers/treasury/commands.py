@@ -1,9 +1,14 @@
-from telegram import Update
+from telegram import (
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    Update,
+)
 from telegram.constants import ParseMode
 from telegram.ext import (
     ContextTypes,
 )
 
+from src.tgbot.handlers.payments.purchase import PURCHASE_TOKEN_CALLBACK_DATA_PATTERN
 from src.tgbot.handlers.treasury.constants import PAYOUTS, TrxType
 from src.tgbot.handlers.treasury.service import (
     get_leaderboard,
@@ -23,6 +28,21 @@ async def handle_show_balance(
     update: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> None:
     balance = await get_user_balance(update.effective_user.id)
+
+    reply_markup = InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton(
+                    "buy 1 🍔",
+                    callback_data=PURCHASE_TOKEN_CALLBACK_DATA_PATTERN.format(
+                        tokens_to_buy=1
+                    ),
+                )
+            ],
+            # [],
+        ]
+    )
+
     return await update.message.reply_text(
         f"""
 <b>Your balance</b>: {balance} 🍔
@@ -31,6 +51,7 @@ Your rank: /leaderboard
 Get more 🍔: /kitchen
         """,
         parse_mode=ParseMode.HTML,
+        reply_markup=reply_markup,
     )
 
 

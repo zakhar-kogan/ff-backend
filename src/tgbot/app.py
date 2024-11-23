@@ -60,6 +60,10 @@ from src.tgbot.handlers.chat.feedback import (
 from src.tgbot.handlers.chat.reaction import give_random_reaction
 from src.tgbot.handlers.chat.send_tokens import send_tokens_to_reply
 from src.tgbot.handlers.moderator import get_meme, meme_source
+from src.tgbot.handlers.payments.purchase import (
+    PURCHASE_TOKEN_CALLBACK_DATA_REGEXP,
+    handle_new_token_purchase_request_callback,
+)
 from src.tgbot.handlers.stats.stats import handle_stats
 from src.tgbot.handlers.stats.wrapped import handle_wrapped, handle_wrapped_button
 from src.tgbot.handlers.treasury.commands import (
@@ -158,6 +162,15 @@ def add_handlers(application: Application) -> None:
             ["nickname"],
             handle_change_nickname,
             filters=filters.ChatType.PRIVATE & filters.UpdateType.MESSAGE,
+        )
+    )
+
+    ####################
+    # purchase
+    application.add_handler(
+        CallbackQueryHandler(
+            handle_new_token_purchase_request_callback,
+            pattern=PURCHASE_TOKEN_CALLBACK_DATA_REGEXP,
         )
     )
 
