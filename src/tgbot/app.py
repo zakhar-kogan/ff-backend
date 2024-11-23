@@ -10,6 +10,7 @@ from telegram.ext import (
     CommandHandler,
     InlineQueryHandler,
     MessageHandler,
+    PreCheckoutQueryHandler,
     filters,
 )
 
@@ -63,6 +64,8 @@ from src.tgbot.handlers.moderator import get_meme, meme_source
 from src.tgbot.handlers.payments.purchase import (
     PURCHASE_TOKEN_CALLBACK_DATA_REGEXP,
     handle_new_token_purchase_request_callback,
+    precheckout_callback,
+    successful_payment_callback,
 )
 from src.tgbot.handlers.stats.stats import handle_stats
 from src.tgbot.handlers.stats.wrapped import handle_wrapped, handle_wrapped_button
@@ -172,6 +175,11 @@ def add_handlers(application: Application) -> None:
             handle_new_token_purchase_request_callback,
             pattern=PURCHASE_TOKEN_CALLBACK_DATA_REGEXP,
         )
+    )
+
+    application.add_handler(PreCheckoutQueryHandler(precheckout_callback))
+    application.add_handler(
+        MessageHandler(filters.SUCCESSFUL_PAYMENT, successful_payment_callback)
     )
 
     ####################
