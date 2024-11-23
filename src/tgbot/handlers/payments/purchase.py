@@ -40,8 +40,8 @@ async def send_invoice_buying_coins_for_stars(
 ):
     price_in_stars = int(tokens_to_buy * STARS_TO_TOKEN_EXCHANGE_RATE)
 
-    title = "Buy 🍔🍔🍔"
-    description = "Use tokens in bot or simply support the project. No refunds."
+    title = f"Buy {tokens_to_buy} 🍔"
+    description = "To use in bot or to support the project. No refunds."
     payload = f"buying:{tokens_to_buy}:forStars:{price_in_stars}"
     labelled_price = LabeledPrice(f"{tokens_to_buy} 🍔", price_in_stars)
 
