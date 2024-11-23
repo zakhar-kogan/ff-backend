@@ -154,6 +154,7 @@ async def search_memes_for_inline_query(
         FROM meme M
         WHERE M.status = '{MemeStatus.OK}'
         AND M.type = '{MemeType.IMAGE}'
+        AND M.ocr_result IS NOT NULL
         ORDER BY word_similarity(:search_query, M.ocr_result ->> 'text') DESC
         LIMIT {limit};
     """
