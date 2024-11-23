@@ -7,11 +7,10 @@ from telegram.ext import (
     CallbackContext,
 )
 
-from src.tgbot.handlers.treasury.constants import (
-    TrxType,
-)
+from src.tgbot.constants import UserType
 from src.tgbot.handlers.treasury.payments import mint_tokens
 from src.tgbot.logs import log
+from src.tgbot.user_info import get_user_info
 
 PURCHASE_TOKEN_CALLBACK_DATA_PATTERN = "pu_{tokens_to_buy}"
 PURCHASE_TOKEN_CALLBACK_DATA_REGEXP = "^pu_"
@@ -77,10 +76,13 @@ async def successful_payment_callback(update: Update, context: CallbackContext):
 
     payment = update.message.successful_payment
     telegram_payment_charge_id = payment.telegram_payment_charge_id
+    payload = payment.invoice_payload
+
+    tokens_bought = int(payload.split(":")[1])
 
     balance = await mint_tokens(
-        update.effective_user.id,
-        TrxType.PURCHASE_TOKEN,
+        user_id=update.effective_user.id,
+        amount=tokens_bought,
         external_id=telegram_payment_charge_id,
     )
 
@@ -98,6 +100,10 @@ async def successful_payment_callback(update: Update, context: CallbackContext):
 
 async def refund_command(update: Update, context: CallbackContext):
     _, payment_id = update.message.text.split(" ", 1)
+
+    user = await get_user_info(update.effective_user.id)
+    if user["type"] != UserType.ADMIN:
+        return
 
     # TODO:
     # 1. find tx with payment_id
