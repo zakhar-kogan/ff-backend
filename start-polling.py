@@ -1,10 +1,10 @@
 import logging
+
 import redis.asyncio as aioredis
 
-from src import redis
-from src.tgbot import bot
+from src import localizer, redis
 from src.config import settings
-
+from src.tgbot import app
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
@@ -20,5 +20,7 @@ if __name__ == "__main__":
     )
     redis.redis_client = aioredis.Redis(connection_pool=pool)
 
-    bot.application = bot.setup_application(is_webhook=False)
-    bot.run_polling(bot.application)
+    localizer.localizations = localizer.load()
+
+    app.application = app.setup_application(is_webhook=False)
+    app.run_polling(app.application)

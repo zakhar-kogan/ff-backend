@@ -1,6 +1,7 @@
 import uuid
-import httpx
 from typing import Any
+
+import httpx
 
 from src.config import settings
 from src.storage.schemas import OcrResult
@@ -10,12 +11,12 @@ HEADERS = {
     "authorization": f"Bearer {settings.MYSTIC_TOKEN}",
 }
 
-PIPELINE_ID = "uriel/easyocr-r:v31"
+PIPELINE_ID = "uriel/easyocr-r:v33"
 
 
 async def load_file_to_mystic(file_content: bytes) -> str:
     file_name = f"{uuid.uuid4()}.jpg"
-    files = { "pfile": (file_name, file_content, "image/jpeg") }
+    files = {"pfile": (file_name, file_content, "image/jpeg")}
 
     async with httpx.AsyncClient() as client:
         response = await client.post(
@@ -29,8 +30,8 @@ async def load_file_to_mystic(file_content: bytes) -> str:
 
 async def ocr_mystic_file_path(
     mystic_file_path: str,
+    language: str,
     pipeline_id: str = PIPELINE_ID,
-    language: str = "ru",
 ) -> dict[str, Any]:
     async with httpx.AsyncClient() as client:
         response = await client.post(
@@ -42,11 +43,8 @@ async def ocr_mystic_file_path(
                         "type": "file",
                         "file_path": mystic_file_path,
                     },
-                    {
-                        "type": "string",
-                        "value": language
-                    }
-                ]
+                    {"type": "string", "value": language},
+                ],
             },
             headers=HEADERS,
         )
@@ -54,23 +52,20 @@ async def ocr_mystic_file_path(
         return response.json()
 
 
-async def ocr_content(
-    content: bytes,
-) -> OcrResult | None:
+async def ocr_content(content: bytes, language: str) -> OcrResult | None:
     try:
         mystic_file_path = await load_file_to_mystic(content)
-        ocr_result = await ocr_mystic_file_path(mystic_file_path)
+        ocr_result = await ocr_mystic_file_path(mystic_file_path, language)
     except Exception as e:
         print(f"Mystic OCR error: {e}")
         return None
 
-    print(f"OCR result from Mystic: {ocr_result}")
-    if ocr_result is None:
+    if ocr_result is None or ocr_result["outputs"] is None:
         print(f"Mystic OCR returned no result: {ocr_result}.")
         return None
 
     rows = ocr_result["outputs"][0]["value"]
-    full_text = "\n".join([r[1] for r in rows])
+    full_text = " ".join([r[1] for r in rows])
 
     return OcrResult(
         model=f"mystic:{PIPELINE_ID}",

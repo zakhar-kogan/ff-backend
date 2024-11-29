@@ -1,0 +1,92 @@
+onboarding.welcome_message:
+  en: |-
+    🚀 <code>Welcome to Fast Food Memes!</code> 🍔
+
+    👨‍👩‍👧‍👦 We're a community of <b>100,000+ people</b> who love memes. 
+    
+    📺 We're building <b>a new way</b>™️ to watch memes.
+
+    <i>How to use:</i>
+    1. You will receive a meme.
+    2. Press 👍 / 👎 buttons to react on meme.
+    3. <b>AI</b> will reply with the next meme based on your <b>reaction</b>.
+
+    Are you ready? 🤔🤔🤔🤔🤔🤔🤔🤔🤔🤔🤔🤔🤔🤔🤔🤔🤔🤔🤔
+  ru: |-
+    🚀 <code>Добро пожаловать в Fast Food Memes!</code> 🍔
+
+    👨‍👩‍👧‍👦 Мы сообщество из <b>100,000+</b> любителей смачно поржать.
+    
+    📺 Мы строим <b>новый способ</b>™️ смотреть мемы.
+
+    <i>Как пользоваться ботом:</i>
+    1. Ты получишь мем.
+    2. Оцени мем, нажав на кнопки 👍 / 👎.
+    3. <b>AI</b> подберет тебе следующий мем!
+
+    Больше сидишь в боте - AI лучше рекомендует. Все просто 🎭
+
+    🤔🤔🤔🤔🤔 ТЫ ГОТОВ? 🤔🤔🤔🤔🤔
+  uk: |-
+    🚀 <code>Ласкаво просимо до Fast Food Memes!</code> 🍔
+
+    👨‍👩‍👧‍👦 Ми спільнота з <b>100,000+</b> любителів смачно посміятися.
+    
+    📺 Ми будуємо <b>новий спосіб</b>™️ дивитися меми.
+
+    <i>Як користуватися ботом:</i>
+    1. Ти отримаєш мем.
+    2. Оціни мем, натиснувши на кнопки 👍 / 👎.
+    3. <b>AI</b> підбере тобі наступний мем!
+
+    Більше сидиш в боті - AI краще рекомендує. Все просто 🎭
+
+    🤔🤔🤔🤔🤔 ТИ ГОТОВИЙ? 🤔🤔🤔🤔🤔
+
+
+onboarding.invitation_successfull_alert:
+  en: |-
+    🎉 Your friend {invited_user_name} just joined the bot!
+    Keep sharing memes from the bot and you may be rewarded 🤫🔺💎
+  ru: |-
+    🎉 Твой друг {invited_user_name} только что зашел в бота.
+    Продолжай пересылать наши мемы и мб когда-нибудь зачтется 🤫🔺💎
+  uk: |-
+    🎉 Твій друг {invited_user_name} тільки що заходив в бота.
+    Продовжуй пересилати наші меми і може колись тобі щось зачіпає 🤫🔺💎
+  es: |-
+    🎉 ¡Tu amigo {invited_user_name} acaba de unirse al bot!
+    Sigue compartiendo memes del bot y podrías ser recompensado 🤫🔺💎
+  pt: |-
+    🎉 Seu amigo {invited_user_name} acabou de entrar no bot!
+    Continue compartilhando memes do bot e você pode ser recompensado 🤫🔺💎
+  fr: |-
+    🎉 Votre ami {invited_user_name} vient de rejoindre le bot !
+    Continuez à partager des memes du bot et vous pourriez être récompensé 🤫🔺💎
+  it: |-
+    🎉 Il tuo amico {invited_user_name} è appena entrato nel bot!
+    Continua a condividere meme dal bot e potresti essere ricompensato 🤫🔺💎
+  de: |-
+    🎉 Dein Freund {invited_user_name} ist gerade dem Bot beigetreten!
+    Teile weiterhin Memes vom Bot und du wirst vielleicht belohnt 🤫 🔺 💎
+
+
+onboarding.invited_by_admin:
+  ru: |-
+    💎 Привет! Теперь и у тебя есть доступ. Быстрее жми /start
+  en: |-
+    💎 yoo! Welcome to Fast Food Memes bot. Click ➡️ /start
+  uk: |-
+    💎 Привіт! Тепер і у тебе є доступ. Швидше натискай /start
+  es: |-
+    💎 ¡Hola! Ahora también tienes acceso. Haz clic en /start
+  pt: |-
+    💎 Olá! Agora você também tem acesso. Clique em /start
+  fr: |-
+    💎 Salut! Maintenant tu as aussi accès. Clique sur /start
+  it: |-
+    💎 Ciao! Ora anche tu hai accesso. Clicca su /start
+  de: |-
+    💎 Hallo! Jetzt hast du auch Zugang. Klicke auf /start
+  uz: |-
+    💎 Salom! Endi sizga ham kirish berildi. /start tugmasini bosing
