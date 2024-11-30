@@ -312,8 +312,8 @@ def add_handlers(application: Application) -> None:
     application.add_handlers(
         [
             MessageHandler(
-                filters=filters.ChatType.PRIVATE & filters.PHOTO,
-                # & (filters.PHOTO | filters.VIDEO | filters.ANIMATION),
+                filters=filters.ChatType.PRIVATE  # & filters.PHOTO,
+                & (filters.PHOTO | filters.VIDEO | filters.ANIMATION),
                 callback=upload_meme.handle_message_with_meme,
             ),
             CallbackQueryHandler(

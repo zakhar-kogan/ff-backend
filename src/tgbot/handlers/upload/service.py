@@ -18,13 +18,22 @@ from src.tgbot.service import get_or_create_meme_source
 
 
 async def create_meme_raw_upload(msg: Message) -> dict[str, Any]:
+    if msg.photo:
+        media = msg.photo[-1].to_dict()
+    elif msg.animation:
+        media = msg.animation.to_dict()
+    elif msg.video:
+        media = msg.video.to_dict()
+    else:
+        raise ValueError("Message must contain photo, animation or video")
+
     query = (
         insert(meme_raw_upload)
         .values(
             user_id=msg.from_user.id,
             message_id=msg.message_id,
             forward_origin=msg.forward_origin.to_dict() if msg.forward_origin else None,
-            media=msg.photo[-1].to_dict(),
+            media=media,
             date=msg.date.replace(tzinfo=None),
         )
         .returning(meme_raw_upload)
@@ -69,6 +78,11 @@ async def create_meme_from_meme_raw_upload(
         else meme_upload["date"]
     )
 
+    if meme_upload["media"].get("duration") > 0:
+        meme_type = MemeType.VIDEO
+    else:
+        meme_type = MemeType.IMAGE
+
     meme_source_for_meme_upload = await get_or_create_meme_source_for_meme_upload(
         meme_upload
     )
@@ -79,7 +93,7 @@ async def create_meme_from_meme_raw_upload(
             meme_source_id=meme_source_for_meme_upload["id"],
             raw_meme_id=meme_upload["id"],
             status=MemeStatus.CREATED,
-            type=MemeType.IMAGE,
+            type=meme_type,
             telegram_file_id=meme_upload["media"]["file_id"],
             caption=None,
             language_code=meme_upload["language_code"],

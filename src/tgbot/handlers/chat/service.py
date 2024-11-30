@@ -3,7 +3,6 @@ from telegram import Message
 
 from src.database import (
     execute,
-    fetch_one,
     message_tg,
 )
 

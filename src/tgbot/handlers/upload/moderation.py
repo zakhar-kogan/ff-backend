@@ -18,7 +18,7 @@ from src.flows.storage.memes import (
 from src.recommendations.service import create_user_meme_reaction
 from src.stats.meme import calculate_meme_reactions_stats
 from src.stats.meme_source import calculate_meme_source_stats
-from src.storage.constants import MemeStatus
+from src.storage.constants import MemeStatus, MemeType
 from src.storage.service import (
     # find_meme_duplicate,
     update_meme,
@@ -188,13 +188,22 @@ async def send_uploaded_meme_to_manual_review(
             if username:
                 text += f"\n<b>Forwarded from</b>: @{username}"
 
-    await bot.send_photo(
-        chat_id=settings.UPLOADED_MEMES_REVIEW_CHAT_ID,
-        photo=meme["telegram_file_id"],
-        caption=text,
-        parse_mode=ParseMode.HTML,
-        reply_markup=review_keyboard(meme_upload["id"]),
-    )
+    if meme["type"] == MemeType.IMAGE:
+        await bot.send_photo(
+            chat_id=settings.UPLOADED_MEMES_REVIEW_CHAT_ID,
+            photo=meme["telegram_file_id"],
+            caption=text,
+            parse_mode=ParseMode.HTML,
+            reply_markup=review_keyboard(meme_upload["id"]),
+        )
+    elif meme["type"] in (MemeType.VIDEO, MemeType.ANIMATION):
+        await bot.send_video(
+            chat_id=settings.UPLOADED_MEMES_REVIEW_CHAT_ID,
+            video=meme["telegram_file_id"],
+            caption=text,
+            parse_mode=ParseMode.HTML,
+            reply_markup=review_keyboard(meme_upload["id"]),
+        )
 
 
 async def handle_uploaded_meme_review_button(

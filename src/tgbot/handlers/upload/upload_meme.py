@@ -93,13 +93,12 @@ async def handle_message_with_meme(
         if uploaded_today >= 5:
             return await update.message.reply_text(
                 """
-    You already uploaded lots of memes today. Try again tomorrow.
-    Think about quality, not quantity: the goal is to get as many likes as possible.
+You already uploaded lots of memes today. Try again tomorrow.
+Think about quality, not quantity: the goal is to get as many likes as possible.
                 """
             )
 
     meme_upload = await create_meme_raw_upload(update.message)
-    # TODO: check that a user uploaded <= N memes today
 
     if not await check_if_user_follows_related_channel(
         context.bot, update.effective_user.id, user["interface_lang"]
@@ -112,25 +111,42 @@ You need to follow our channel to upload memes and try again:
             """
         )
 
-    await update.message.reply_photo(
-        photo=update.message.photo[-1].file_id,
-        caption=localizer.t("upload.rules", user["interface_lang"]),
-        parse_mode=ParseMode.HTML,
-        reply_markup=InlineKeyboardMarkup(
+    reply_markup = InlineKeyboardMarkup(
+        [
             [
-                [
-                    InlineKeyboardButton(
-                        localizer.t(
-                            "upload.rules_accept_button", user["interface_lang"]
-                        ),
-                        callback_data=RULES_ACCEPTED_CALLBACK_DATA_PATTERN.format(
-                            upload_id=meme_upload["id"],
-                        ),
-                    )
-                ]
+                InlineKeyboardButton(
+                    localizer.t("upload.rules_accept_button", user["interface_lang"]),
+                    callback_data=RULES_ACCEPTED_CALLBACK_DATA_PATTERN.format(
+                        upload_id=meme_upload["id"],
+                    ),
+                )
             ]
-        ),
+        ]
     )
+
+    if update.message.photo:
+        await update.message.reply_photo(
+            photo=update.message.photo[-1].file_id,
+            caption=localizer.t("upload.rules", user["interface_lang"]),
+            parse_mode=ParseMode.HTML,
+            reply_markup=reply_markup,
+        )
+    elif update.message.video:
+        await update.message.reply_video(
+            video=update.message.video,
+            caption=localizer.t("upload.rules", user["interface_lang"]),
+            parse_mode=ParseMode.HTML,
+            reply_markup=reply_markup,
+        )
+    elif update.message.animation:
+        await update.message.reply_animation(
+            animation=update.message.animation,
+            caption=localizer.t("upload.rules", user["interface_lang"]),
+            parse_mode=ParseMode.HTML,
+            reply_markup=reply_markup,
+        )
+    else:
+        raise Exception(f"not supported format: {update.message.to_json()}")
 
 
 # callback: RULES_ACCEPTED_CALLBACK_DATA
