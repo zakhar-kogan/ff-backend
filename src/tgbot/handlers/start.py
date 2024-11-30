@@ -13,6 +13,9 @@ from src.tgbot.handlers.language import (
     handle_language_settings,
     init_user_languages_from_tg_user,
 )
+from src.tgbot.handlers.treasury.commands import (
+    handle_show_kitchen,
+)
 from src.tgbot.logs import log
 from src.tgbot.senders.next_message import next_message
 from src.tgbot.service import (
@@ -83,6 +86,9 @@ async def handle_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         context.bot,
         created,
     )
+
+    if deep_link == "kitchen":
+        return await handle_show_kitchen(update, context)
 
     if created:  # new user:
         await init_user_languages_from_tg_user(update.effective_user)

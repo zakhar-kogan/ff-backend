@@ -416,6 +416,19 @@ user_deep_link_log = Table(
     Column("created_at", DateTime, server_default=func.now(), nullable=False),
 )
 
+message_tg = Table(
+    "message_tg",
+    metadata,
+    Column("id", Integer, primary_key=True),
+    Column("message_id", BigInteger, nullable=False),
+    Column("date", DateTime),
+    Column("chat_id", BigInteger, nullable=False),
+    Column("user_id", BigInteger, nullable=False),
+    Column("text", String),
+    Column("reply_to_message_id", BigInteger),
+    # attachment?
+)
+
 
 async def fetch_one(select_query: Select | Insert | Update) -> dict[str, Any] | None:
     async with engine.begin() as conn:

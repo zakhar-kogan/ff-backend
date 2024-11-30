@@ -1,24 +1,14 @@
 import asyncio
 import random
 
-from telegram import Message, Update
+from telegram import Update
 from telegram.error import BadRequest
 from telegram.ext import ContextTypes
 
 from src.tgbot.constants import UserType
+from src.tgbot.handlers.chat.utils import _reply_and_delete
 from src.tgbot.handlers.treasury.service import get_user_balance, transfer_tokens
 from src.tgbot.service import get_user_by_id
-
-
-async def _reply_and_delete(message: Message, text: str, sleep_sec: int = 5):
-    msg = await message.reply_text(text)
-    await asyncio.sleep(sleep_sec)
-    await msg.delete()
-    try:
-        await message.delete()
-    except BadRequest:
-        pass
-    return
 
 
 async def send_tokens_to_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -37,6 +27,7 @@ async def send_tokens_to_reply(update: Update, context: ContextTypes.DEFAULT_TYP
         return await _reply_and_delete(
             update.message,
             "Нужно указать число после плюсика)",
+            delete_original=True,
         )
 
     to_send = int(update.message.text[1:])
@@ -47,6 +38,7 @@ async def send_tokens_to_reply(update: Update, context: ContextTypes.DEFAULT_TYP
         return await _reply_and_delete(
             update.message,
             f"Ну ты жадный пёс {'🐺' * wolves}{'.' * dotes}",
+            delete_original=True,
         )
 
     from_user_tg = update.effective_user
@@ -57,6 +49,7 @@ async def send_tokens_to_reply(update: Update, context: ContextTypes.DEFAULT_TYP
         return await _reply_and_delete(
             update.message,
             "У тебя нет столько бургеров.....",
+            delete_original=True,
         )
 
     to_user_tg = update.message.reply_to_message.from_user
@@ -64,6 +57,7 @@ async def send_tokens_to_reply(update: Update, context: ContextTypes.DEFAULT_TYP
         return await _reply_and_delete(
             update.message,
             "Мне не нужны твои бургеры, я и есть бургер",
+            delete_original=True,
         )
 
     to_user_id = to_user_tg.id
@@ -76,6 +70,7 @@ async def send_tokens_to_reply(update: Update, context: ContextTypes.DEFAULT_TYP
             update.message,
             f"Не вижу {to_user_tg.name} в боте! ай-яй-яй 😿",
             sleep_sec=10,
+            delete_original=True,
         )
 
     # add a treasury transaction: -send, +send

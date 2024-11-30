@@ -52,6 +52,7 @@ from src.tgbot.handlers.admin.user_info import (
     delete_user_data_confirmation_page,
     handle_show_user_info,
 )
+from src.tgbot.handlers.chat.chat import handle_chat_message
 from src.tgbot.handlers.chat.chat_member import handle_chat_member_update
 from src.tgbot.handlers.chat.explain_meme import explain_meme_en, explain_meme_ru
 from src.tgbot.handlers.chat.feedback import (
@@ -242,20 +243,19 @@ def add_handlers(application: Application) -> None:
 
     ######################
     # broadcast texts
-    application.add_handler(
-        CommandHandler(
-            "broadcastru",
-            handle_broadcast_text_ru,
-            filters=filters.ChatType.PRIVATE & filters.UpdateType.MESSAGE,
-        )
-    )
-
-    application.add_handler(
-        CommandHandler(
-            "broadcastru1",
-            handle_broadcast_text_ru_trigger,
-            filters=filters.ChatType.PRIVATE & filters.UpdateType.MESSAGE,
-        )
+    application.add_handlers(
+        [
+            CommandHandler(
+                "broadcastru",
+                handle_broadcast_text_ru,
+                filters=filters.ChatType.PRIVATE & filters.UpdateType.MESSAGE,
+            ),
+            CommandHandler(
+                "broadcastru1",
+                handle_broadcast_text_ru_trigger,
+                filters=filters.ChatType.PRIVATE & filters.UpdateType.MESSAGE,
+            ),
+        ]
     )
 
     ######################
@@ -280,6 +280,16 @@ def add_handlers(application: Application) -> None:
     )
 
     ######################
+    # log new messages in chat
+    application.add_handler(
+        MessageHandler(
+            filters=filters.Chat([TELEGRAM_CHAT_RU_CHAT_ID])
+            & filters.UpdateType.MESSAGE,
+            callback=handle_chat_message,
+        )
+    )
+
+    ######################
     # chat activity
 
     application.add_handler(
@@ -299,64 +309,56 @@ def add_handlers(application: Application) -> None:
 
     ######################
     # meme upload by a user
-    application.add_handler(
-        MessageHandler(
-            filters=filters.ChatType.PRIVATE & filters.PHOTO,
-            # & (filters.PHOTO | filters.VIDEO | filters.ANIMATION),
-            callback=upload_meme.handle_message_with_meme,
-        )
-    )
-
-    application.add_handler(
-        CallbackQueryHandler(
-            upload_meme.handle_rules_accepted_callback,
-            pattern=upload_meme.RULES_ACCEPTED_CALLBACK_DATA_REGEXP,
-        )
-    )
-
-    application.add_handler(
-        CallbackQueryHandler(
-            upload_meme.handle_meme_upload_lang_other,
-            pattern=upload_meme.LANGUAGE_SELECTED_OTHER_CALLBACK_DATA_REGEXP,
-        )
-    )
-
-    application.add_handler(
-        CallbackQueryHandler(
-            upload_meme.handle_meme_upload_lang_selected,
-            pattern=upload_meme.LANGUAGE_SELECTED_CALLBACK_DATA_REGEXP,
-        )
-    )
-
-    application.add_handler(
-        CallbackQueryHandler(
-            moderation.handle_uploaded_meme_review_button,
-            pattern=moderation.UPLOADED_MEME_REVIEW_CALLBACK_DATA_REGEXP,
-        )
-    )
-
-    application.add_handler(
-        CommandHandler(
-            "uploads",
-            stats.handle_uploaded_memes_stats,
-            filters=filters.ChatType.PRIVATE & filters.UpdateType.MESSAGE,
-        )
+    application.add_handlers(
+        [
+            MessageHandler(
+                filters=filters.ChatType.PRIVATE & filters.PHOTO,
+                # & (filters.PHOTO | filters.VIDEO | filters.ANIMATION),
+                callback=upload_meme.handle_message_with_meme,
+            ),
+            CallbackQueryHandler(
+                upload_meme.handle_rules_accepted_callback,
+                pattern=upload_meme.RULES_ACCEPTED_CALLBACK_DATA_REGEXP,
+            ),
+            CallbackQueryHandler(
+                upload_meme.handle_meme_upload_lang_other,
+                pattern=upload_meme.LANGUAGE_SELECTED_OTHER_CALLBACK_DATA_REGEXP,
+            ),
+            CallbackQueryHandler(
+                upload_meme.handle_meme_upload_lang_selected,
+                pattern=upload_meme.LANGUAGE_SELECTED_CALLBACK_DATA_REGEXP,
+            ),
+            CallbackQueryHandler(
+                moderation.handle_uploaded_meme_review_button,
+                pattern=moderation.UPLOADED_MEME_REVIEW_CALLBACK_DATA_REGEXP,
+            ),
+            CommandHandler(
+                "uploads",
+                stats.handle_uploaded_memes_stats,
+                filters=filters.ChatType.PRIVATE & filters.UpdateType.MESSAGE,
+            ),
+        ]
     )
 
     # meme source management
-    application.add_handler(
-        MessageHandler(
-            filters=filters.ChatType.PRIVATE
-            & filters.Regex("^(https://t.me|https://vk.com|https://www.instagram.com)"),
-            callback=meme_source.handle_meme_source_link,
-        )
-    )
-
-    application.add_handler(
-        CallbackQueryHandler(
-            meme_source.handle_meme_source_language_selection,
-            pattern=MEME_SOURCE_SET_LANG_REGEXP,
-        )
+    application.add_handlers(
+        [
+            MessageHandler(
+                filters=filters.ChatType.PRIVATE
+                & filters.Regex(
+                    "^(https://t.me|https://vk.com|https://www.instagram.com)"
+                ),
+                callback=meme_source.handle_meme_source_link,
+            ),
+            CallbackQueryHandler(
+                meme_source.handle_meme_source_language_selection,
+                pattern=MEME_SOURCE_SET_LANG_REGEXP,
+            ),
+            CallbackQueryHandler(
+                meme_source.handle_meme_source_change_status,
+                pattern=MEME_SOURCE_SET_STATUS_REGEXP,
+            ),
+        ]
     )
 
     application.add_handler(
@@ -366,41 +368,35 @@ def add_handlers(application: Application) -> None:
         )
     )
 
-    application.add_handler(
-        CallbackQueryHandler(
-            meme_source.handle_meme_source_change_status,
-            pattern=MEME_SOURCE_SET_STATUS_REGEXP,
-        )
-    )
-
     # user blocked bot or bot was added to a chat
     application.add_handler(
         ChatMemberHandler(handle_chat_member_update, ChatMemberHandler.MY_CHAT_MEMBER)
     )
 
     # inline search
-    application.add_handler(InlineQueryHandler(inline.search_inline))
-    application.add_handler(
-        ChosenInlineResultHandler(inline.handle_chosen_inline_result)
+    application.add_handlers(
+        [
+            InlineQueryHandler(inline.search_inline),
+            ChosenInlineResultHandler(inline.handle_chosen_inline_result),
+        ]
     )
 
     application.add_error_handler(error.send_stacktrace_to_tg_chat, block=False)
 
     # show meme / memes by ids
-    application.add_handler(
-        CommandHandler(
-            "meme",
-            get_meme.handle_get_meme,
-            filters=filters.ChatType.PRIVATE & filters.UpdateType.MESSAGE,
-        )
-    )
-
-    application.add_handler(
-        CommandHandler(
-            "show",
-            get_meme.handle_show_memes,
-            filters=filters.ChatType.PRIVATE & filters.UpdateType.MESSAGE,
-        )
+    application.add_handlers(
+        [
+            CommandHandler(
+                "meme",
+                get_meme.handle_get_meme,
+                filters=filters.ChatType.PRIVATE & filters.UpdateType.MESSAGE,
+            ),
+            CommandHandler(
+                "show",
+                get_meme.handle_show_memes,
+                filters=filters.ChatType.PRIVATE & filters.UpdateType.MESSAGE,
+            ),
+        ]
     )
 
     # show user info

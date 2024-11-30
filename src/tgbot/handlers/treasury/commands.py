@@ -88,9 +88,18 @@ Menu:
 ▪▪ an invited friend has Telegram premium: {PAYOUTS[TrxType.USER_INVITER_PREMIUM]} 🍔
 ▪▪ only new ffmemes users counts
 
+▪ top 5 uploaded memes in weekly leaderboard: 
+    🥇: {PAYOUTS[TrxType.UPLOADER_TOP_WEEKLY_1]} 🍔 
+    🥈: {PAYOUTS[TrxType.UPLOADER_TOP_WEEKLY_2]} 🍔 
+    🥉: {PAYOUTS[TrxType.UPLOADER_TOP_WEEKLY_3]} 🍔
+    4: {PAYOUTS[TrxType.UPLOADER_TOP_WEEKLY_4]} 🍔
+    5: {PAYOUTS[TrxType.UPLOADER_TOP_WEEKLY_5]} 🍔
+
+▪ be active in our chats ❤️
+
 Soon:
-▪ top 3 memes in weekly leaderboard: 50 🍔, 30 🍔, 20 🍔
 ▪ follow our channels: ? 🍔
+▪ more ways to spend your 🍔🍔🍔
 
 /leaderboard /balance /lang /chat /nickname
         """,  # noqa
