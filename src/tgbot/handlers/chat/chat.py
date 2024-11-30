@@ -2,6 +2,7 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Message, Update
 from telegram.ext import ContextTypes
 
 from src.tgbot.constants import TELEGRAM_CHANNEL_RU_CHAT_ID, TELEGRAM_CHAT_RU_CHAT_ID
+from src.tgbot.handlers.chat.reaction import give_random_reaction
 from src.tgbot.handlers.chat.service import save_telegram_message
 from src.tgbot.handlers.chat.utils import _reply_and_delete
 from src.tgbot.handlers.treasury.service import get_user_balance
@@ -34,6 +35,8 @@ async def handle_chat_message(update: Update, context: ContextTypes.DEFAULT_TYPE
     # if if_bot_was_mentioned(msg):
     #     await generate_ai_reply_to_a_message(update, context)
     #     return
+    # else:
+    await give_random_reaction(update, context)
 
 
 async def generate_ai_reply_to_a_message(

@@ -280,22 +280,22 @@ def add_handlers(application: Application) -> None:
     )
 
     ######################
-    # log new messages in chat
-    application.add_handler(
-        MessageHandler(
-            filters=filters.Chat([TELEGRAM_CHAT_RU_CHAT_ID])
-            & filters.UpdateType.MESSAGE,
-            callback=handle_chat_message,
-        )
-    )
-
-    ######################
     # chat activity
 
     application.add_handler(
         MessageHandler(
             filters=filters.REPLY & filters.ChatType.GROUPS & filters.Regex(r"^\+\d+$"),
             callback=send_tokens_to_reply,
+        )
+    )
+
+    ######################
+    # log new messages in chat
+    application.add_handler(
+        MessageHandler(
+            filters=filters.Chat([TELEGRAM_CHAT_RU_CHAT_ID])
+            & filters.UpdateType.MESSAGE,
+            callback=handle_chat_message,
         )
     )
 
