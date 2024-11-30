@@ -171,7 +171,7 @@ async def send_uploaded_meme_to_manual_review(
     meme_lang = SUPPORTED_LANGUAGES.get(meme["language_code"]) or meme["language_code"]
     text = f"""
 👨‍✈️ REVIEW MEME #{meme["id"]}
-<b>Uploaded by</b>: {name} {tg_user_info["interface_lang"]}
+<b>Uploaded by</b>: {name} {tg_user_info["language_code"]}
 <b>Meme language</b>: {meme_lang}
     """
 
