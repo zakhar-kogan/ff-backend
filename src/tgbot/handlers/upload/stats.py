@@ -8,11 +8,13 @@
 
 from telegram import (
     InputMediaPhoto,
+    InputMediaVideo,
     Update,
 )
 from telegram.constants import ParseMode
 from telegram.ext import ContextTypes
 
+from src.storage.constants import MemeType
 from src.tgbot.handlers.upload.service import (
     get_fans_of_user_id,
     get_uploaded_memes_of_user_id,
@@ -66,7 +68,10 @@ views - likes - like %"""
         dislikes = uploaded_meme["ndislikes"]
         like_prc = round(likes * 100.0 / (likes + dislikes)) if likes + dislikes else 0
 
-        media.append(InputMediaPhoto(media=uploaded_meme["telegram_file_id"]))
+        if uploaded_meme["type"] == MemeType.IMAGE:
+            media.append(InputMediaPhoto(media=uploaded_meme["telegram_file_id"]))
+        else:
+            media.append(InputMediaVideo(media=uploaded_meme["telegram_file_id"]))
 
         STATS_TEXT += f"\n▪ {views} - {likes} - {like_prc}%"
 
