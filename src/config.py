@@ -31,6 +31,7 @@ class Config(BaseSettings):
     VK_TOKEN: str | None = None
 
     MYSTIC_TOKEN: str | None = None
+    MODAL_ENDPOINT: str | None = None
 
     # @model_validator(mode="after")
     # def validate_sentry_non_local(self) -> "Config":
