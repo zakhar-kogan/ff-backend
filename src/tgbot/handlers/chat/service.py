@@ -1,8 +1,10 @@
+from sqlalchemy import text
 from sqlalchemy.dialects.postgresql import insert
 from telegram import Message
 
 from src.database import (
     execute,
+    fetch_all,
     message_tg,
 )
 
@@ -24,3 +26,17 @@ async def save_telegram_message(msg: Message) -> None:
         # .returning(message_tg)
     )
     return await execute(query)
+
+
+async def get_active_chat_users(limit: int = 10):
+    select_query = f"""
+        SELECT MSG.user_id, MAX(MSG.date) date
+        FROM message_tg MSG
+        INNER JOIN "user" U
+            ON U.id = MSG.user_id
+        WHERE U.blocked_bot_at IS NULL
+        GROUP BY 1
+        ORDER BY 2 DESC
+        LIMIT {limit}
+    """
+    return await fetch_all(text(select_query))

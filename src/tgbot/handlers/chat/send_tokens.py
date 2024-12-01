@@ -6,9 +6,11 @@ from telegram.error import BadRequest
 from telegram.ext import ContextTypes
 
 from src.tgbot.constants import UserType
+from src.tgbot.handlers.chat.service import get_active_chat_users
 from src.tgbot.handlers.chat.utils import _reply_and_delete
 from src.tgbot.handlers.treasury.service import get_user_balance, transfer_tokens
 from src.tgbot.service import get_user_by_id
+from src.tgbot.user_info import get_user_info
 
 
 async def send_tokens_to_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -110,3 +112,25 @@ async def send_tokens_to_reply(update: Update, context: ContextTypes.DEFAULT_TYP
         await mreceive.delete()
     except BadRequest:
         pass
+
+
+async def reward_active_chat_users(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user = await get_user_info(update.effective_user.id)
+    if user["type"] != UserType.ADMIN:
+        return
+
+    # example: +fire 10
+    limit_text = update.message.text.split(" ")[1]
+    if not limit_text.isdigit():
+        return
+
+    limit = int(limit_text)
+    active_users = await get_active_chat_users(limit)
+    user_ids = [u["user_id"] for u in active_users]
+
+    # TODO:
+    # add to sql: username / first_name
+    # message with usernames / first_names
+    # add +1 to active users
+
+    await update.message.reply_text(f"{len(user_ids)}")

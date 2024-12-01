@@ -60,7 +60,10 @@ from src.tgbot.handlers.chat.feedback import (
     handle_feedback_reply,
 )
 from src.tgbot.handlers.chat.reaction import give_random_reaction
-from src.tgbot.handlers.chat.send_tokens import send_tokens_to_reply
+from src.tgbot.handlers.chat.send_tokens import (
+    reward_active_chat_users,
+    send_tokens_to_reply,
+)
 from src.tgbot.handlers.moderator import get_meme, meme_source
 from src.tgbot.handlers.payments.purchase import (
     PURCHASE_TOKEN_CALLBACK_DATA_REGEXP,
@@ -281,6 +284,15 @@ def add_handlers(application: Application) -> None:
 
     ######################
     # chat activity
+
+    application.add_handler(
+        MessageHandler(
+            filters=filters.REPLY
+            & filters.ChatType.GROUPS
+            & filters.Regex(r"^\+fire \d$"),
+            callback=reward_active_chat_users,
+        )
+    )
 
     application.add_handler(
         MessageHandler(
