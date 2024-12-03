@@ -287,9 +287,7 @@ def add_handlers(application: Application) -> None:
 
     application.add_handler(
         MessageHandler(
-            filters=filters.REPLY
-            & filters.ChatType.GROUPS
-            & filters.Regex(r"^\+fire\ \d+$"),
+            filters=filters.ChatType.GROUPS & filters.Regex(r"^\+fire\ \d+$"),
             callback=reward_active_chat_users,
         )
     )
