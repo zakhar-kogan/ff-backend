@@ -9,6 +9,7 @@ from telegram.ext import ContextTypes
 from src.config import settings
 from src.storage.upload import download_meme_content_from_tg
 from src.tgbot.constants import TELEGRAM_CHANNEL_RU_CHAT_ID
+from src.tgbot.handlers.chat.service import save_telegram_message
 from src.tgbot.logs import log
 from src.tgbot.service import get_user_by_id
 from src.tgbot.utils import check_if_user_chat_member
@@ -117,16 +118,22 @@ async def generate_and_send_meme_explanation(message: Message):
 
     vision_result = await call_chatgpt_vision(image_bytes, prompt)
 
-    if vision_result:
-        vision_result = html.unescape(vision_result)
-        try:
-            await message.reply_text(vision_result)
-        except Forbidden:
-            await log(
-                f"Can't send explanation to chat {message.chat_id}: {vision_result}",
-            )
-        except BadRequest:
-            pass
+    if not vision_result:
+        return
+
+    vision_result = html.unescape(vision_result)
+    try:
+        msg = await message.reply_text(vision_result)
+    except Forbidden:
+        await log(
+            f"Can't send explanation to chat {message.chat_id}: {vision_result}",
+        )
+        return
+    except BadRequest:
+        pass
+        return
+
+    await save_telegram_message(msg)
 
 
 async def explain_meme_en(update: Update, context: ContextTypes.DEFAULT_TYPE):
