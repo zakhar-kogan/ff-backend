@@ -4,6 +4,7 @@ import random
 from telegram import Update
 from telegram.error import BadRequest
 from telegram.ext import ContextTypes
+from telegram.constants import ParseMode
 
 from src.tgbot.constants import UserType
 from src.tgbot.handlers.chat.service import get_active_chat_users
@@ -114,6 +115,15 @@ async def send_tokens_to_reply(update: Update, context: ContextTypes.DEFAULT_TYP
         pass
 
 
+def get_markdown_user_tag(u: dict):
+    if u.get("username"):
+        return "@" + u["username"]
+    elif u.get("first_name"):
+        return f"""[{u["first_name"]}](tg://user?id={u["user_id"]})"""
+    else:
+        raise Exception(f"Can't tag user: {u}")
+
+
 async def reward_active_chat_users(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = await get_user_info(update.effective_user.id)
     if user["type"] != UserType.ADMIN:
@@ -125,12 +135,20 @@ async def reward_active_chat_users(update: Update, context: ContextTypes.DEFAULT
         return
 
     limit = int(limit_text)
-    active_users = await get_active_chat_users(limit)
-    user_ids = [u["user_id"] for u in active_users]
+
+    chat_id = update.effective_chat.id
+
+    active_users = await get_active_chat_users(chat_id, limit)
+
+    tags = [get_markdown_user_tag(u) for u in active_users]
+    text = ", ".join(tags)
 
     # TODO:
     # add to sql: username / first_name
     # message with usernames / first_names
     # add +1 to active users
 
-    await update.message.reply_text(f"{len(user_ids)}")
+    await update.message.reply_text(
+        f"{text}",
+        parse_mode=ParseMode.MARKDOWN,
+    )

@@ -28,15 +28,25 @@ async def save_telegram_message(msg: Message) -> None:
     return await execute(query)
 
 
-async def get_active_chat_users(limit: int = 10):
+async def get_active_chat_users(chat_id: int, limit: int = 10):
     select_query = f"""
-        SELECT MSG.user_id, MAX(MSG.date) date
-        FROM message_tg MSG
-        INNER JOIN "user" U
-            ON U.id = MSG.user_id
-        WHERE U.blocked_bot_at IS NULL
-        GROUP BY 1
-        ORDER BY 2 DESC
-        LIMIT {limit}
+        WITH ACTIVE_USERS AS (
+            SELECT MSG.user_id, MAX(MSG.date) date
+            FROM message_tg MSG
+            INNER JOIN "user" U
+                ON U.id = MSG.user_id
+            WHERE U.blocked_bot_at IS NULL
+            AND MSG.chat_id = {chat_id}
+            GROUP BY 1
+            ORDER BY 2 DESC
+            LIMIT {limit}
+        )
+
+        SELECT 
+            ACTIVE_USERS.user_id,
+            UT.username, UT.first_name
+        FROM ACTIVE_USERS
+        INNER JOIN user_tg UT 
+            ON UT.id = ACTIVE_USERS.user_id
     """
     return await fetch_all(text(select_query))
