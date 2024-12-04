@@ -83,7 +83,7 @@ async def get_pending_memes() -> list[dict[str, Any]]:
 
 
 async def get_memes_to_ocr(limit=100):
-    select_query = """
+    select_query = f"""
         SELECT
             M.*,
             MS.type meme_source_type,
@@ -95,17 +95,30 @@ async def get_memes_to_ocr(limit=100):
         FROM meme M
         INNER JOIN meme_source MS
             ON MS.id = M.meme_source_id
+        LEFT JOIN meme_source_stats MSS
+            ON MSS.meme_source_id = MS.id
         LEFT JOIN meme_raw_vk MRV
             ON MRV.id = M.raw_meme_id AND MS.type = 'vk'
+            AND MRV.reposts / (MRV.likes + 1.) > 0.02
         LEFT JOIN meme_raw_telegram MRT
             ON MRT.id = M.raw_meme_id AND MS.type = 'telegram'
+            AND MRT.views > 200
         LEFT JOIN meme_raw_ig MRI
             ON MRI.id = M.raw_meme_id AND MS.type = 'instagram'
+            AND MRI.comments / (MRI.likes + 1.) > 0.01
         WHERE 1=1
             AND M.ocr_result IS NULL
             AND M.status != 'broken_content_link'
             AND M.type = 'image'
-        ORDER BY M.created_at
+            AND COALESCE(
+                MRV.media->>0,
+                MRT.media->0->>'url',
+                MRI.media->0->>'url'
+            ) IS NOT NULL
+        ORDER BY
+            DATE(M.created_at) DESC,
+            (MSS.nlikes + 0.001) / (MSS.ndislikes + 0.001) DESC
+        LIMIT {limit}
     """
     return await fetch_all(text(select_query))
 

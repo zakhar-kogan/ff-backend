@@ -42,11 +42,11 @@ async def get_active_chat_users(chat_id: int, limit: int = 10):
             LIMIT {limit}
         )
 
-        SELECT 
+        SELECT
             ACTIVE_USERS.user_id,
             UT.username, UT.first_name
         FROM ACTIVE_USERS
-        INNER JOIN user_tg UT 
+        INNER JOIN user_tg UT
             ON UT.id = ACTIVE_USERS.user_id
     """
     return await fetch_all(text(select_query))

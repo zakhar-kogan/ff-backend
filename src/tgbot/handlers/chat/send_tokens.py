@@ -2,9 +2,9 @@ import asyncio
 import random
 
 from telegram import Update
+from telegram.constants import ParseMode
 from telegram.error import BadRequest
 from telegram.ext import ContextTypes
-from telegram.constants import ParseMode
 
 from src.tgbot.constants import UserType
 from src.tgbot.handlers.chat.service import get_active_chat_users
@@ -140,8 +140,13 @@ async def reward_active_chat_users(update: Update, context: ContextTypes.DEFAULT
 
     active_users = await get_active_chat_users(chat_id, limit)
 
+    text = f"{update.effective_user.name} запустил ракету\n"
+
     tags = [get_markdown_user_tag(u) for u in active_users]
-    text = ", ".join(tags)
+    text += ", ".join(tags)
+
+    reward_per_person = 1
+    text += f"получили по {reward_per_person}"
 
     # TODO:
     # add to sql: username / first_name
