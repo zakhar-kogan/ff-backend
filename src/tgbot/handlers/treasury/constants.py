@@ -26,6 +26,12 @@ class TrxType(str, Enum):
 
     PURCHASE_TOKEN = "purchase_token"
 
+    ACTIVE_IN_CHAT = "active_in_chat"
+    BOT_REPLY_PAYMENT = "bot_reply_payment"
+
+
+TREASURY_USER_ID = 1123681771
+
 
 PAYOUTS = {
     TrxType.MEME_UPLOADER: 5,
@@ -41,6 +47,8 @@ PAYOUTS = {
     TrxType.DAILY_REWARD: 1,
     TrxType.MEME_PUBLISHED: 50,
     TrxType.BOOSTER_CHANNEL: 500,
+    TrxType.ACTIVE_IN_CHAT: 5,
+    TrxType.BOT_REPLY_PAYMENT: -1,
 }
 
 # TODO: localize
@@ -59,4 +67,6 @@ TRX_TYPE_DESCRIPTIONS = {
     TrxType.MEME_PUBLISHED: "meme published in our channel",
     TrxType.BOOSTER_CHANNEL: "boosting the channel",
     TrxType.PURCHASE_TOKEN: "token purchase",
+    TrxType.ACTIVE_IN_CHAT: "being active in chat",
+    TrxType.BOT_REPLY_PAYMENT: "chatting_with_bot",
 }

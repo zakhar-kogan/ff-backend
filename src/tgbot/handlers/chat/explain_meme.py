@@ -1,47 +1,16 @@
-import base64
 import html
 
-from openai import AsyncOpenAI
 from telegram import Message, Update
 from telegram.error import BadRequest, Forbidden
 from telegram.ext import ContextTypes
 
-from src.config import settings
 from src.storage.upload import download_meme_content_from_tg
 from src.tgbot.constants import TELEGRAM_CHANNEL_RU_CHAT_ID
+from src.tgbot.handlers.chat.ai import call_chatgpt_vision
 from src.tgbot.handlers.chat.service import save_telegram_message
 from src.tgbot.logs import log
 from src.tgbot.service import get_user_by_id
 from src.tgbot.utils import check_if_user_chat_member
-
-
-def encode_image_bytes(image: bytes):
-    return base64.b64encode(image).decode("utf-8")
-
-
-async def call_chatgpt_vision(image: bytes, prompt: str) -> str:
-    encoded_image = encode_image_bytes(image)
-
-    client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
-
-    response = await client.chat.completions.create(
-        model="gpt-4o",
-        messages=[
-            {
-                "role": "user",
-                "content": [
-                    {"type": "text", "text": prompt},
-                    {
-                        "type": "image_url",
-                        "image_url": {"url": f"data:image/jpeg;base64,{encoded_image}"},
-                    },
-                ],
-            }
-        ],
-        max_tokens=300,
-    )
-
-    return response.choices[0].message.content
 
 
 async def explain_meme_ru(update: Update, context: ContextTypes.DEFAULT_TYPE):

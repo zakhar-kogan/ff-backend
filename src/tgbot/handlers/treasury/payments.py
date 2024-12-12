@@ -9,6 +9,7 @@ from telegram import Bot
 from src.tgbot.handlers.treasury.constants import (
     PAYOUTS,
     TRX_TYPE_DESCRIPTIONS,
+    TREASURY_USER_ID,
     TrxType,
 )
 from src.tgbot.handlers.treasury.service import (
@@ -31,6 +32,32 @@ async def pay_if_not_paid(
         user_id,
         type,
         PAYOUTS[type],
+        external_id=external_id,
+    )
+
+    return await get_user_balance(user_id)
+
+
+async def charge_user(
+    user_id: int,
+    type: TrxType,
+    external_id: str,
+) -> int | None:
+    if PAYOUTS[type] >= 0:
+        return  # this is only for payments
+
+    await create_treasury_trx(
+        user_id=user_id,
+        type=type,
+        amount=PAYOUTS[type],
+        external_id=external_id,
+    )
+
+    # Create positive transaction for recipient
+    await create_treasury_trx(
+        user_id=TREASURY_USER_ID,
+        type=type,
+        amount=PAYOUTS[type] * (-1),
         external_id=external_id,
     )
 

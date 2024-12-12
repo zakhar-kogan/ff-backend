@@ -50,3 +50,19 @@ async def get_active_chat_users(chat_id: int, limit: int = 10):
             ON UT.id = ACTIVE_USERS.user_id
     """
     return await fetch_all(text(select_query))
+
+
+async def get_latest_chat_messages(chat_id: int, limit: int = 200):
+    select_query = f"""
+        SELECT
+            M.message_id, M.date, M.user_id, M.text, M.reply_to_message_id,
+            UT.username, UT.first_name
+        FROM message_tg M
+        INNER JOIN user_tg UT
+            ON UT.id = M.user_id
+        WHERE chat_id = {chat_id}
+        ORDER BY date DESC
+        LIMIT {limit}
+    """
+
+    return await fetch_all(text(select_query))

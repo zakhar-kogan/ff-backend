@@ -1,7 +1,8 @@
 import asyncio
 import random
+from datetime import datetime
 
-from telegram import Update
+from telegram import Bot, Update
 from telegram.constants import ParseMode
 from telegram.error import BadRequest
 from telegram.ext import ContextTypes
@@ -9,6 +10,8 @@ from telegram.ext import ContextTypes
 from src.tgbot.constants import UserType
 from src.tgbot.handlers.chat.service import get_active_chat_users
 from src.tgbot.handlers.chat.utils import _reply_and_delete
+from src.tgbot.handlers.treasury.constants import PAYOUTS, TrxType
+from src.tgbot.handlers.treasury.payments import pay_if_not_paid
 from src.tgbot.handlers.treasury.service import get_user_balance, transfer_tokens
 from src.tgbot.service import get_user_by_id
 from src.tgbot.user_info import get_user_info
@@ -136,24 +139,42 @@ async def reward_active_chat_users(update: Update, context: ContextTypes.DEFAULT
 
     limit = int(limit_text)
 
-    chat_id = update.effective_chat.id
+    return await _reward_active_chat_users(
+        context.bot,
+        chat_id=update.effective_chat.id,
+        limit=limit,
+        sender_name=update.effective_user.name,
+    )
 
+
+async def _reward_active_chat_users(
+    bot: Bot,
+    chat_id: int,
+    limit: int,
+    sender_name: str,
+):
     active_users = await get_active_chat_users(chat_id, limit)
 
-    text = f"{update.effective_user.name} запустил ракету\n"
+    text = f"{sender_name} запустил ракету\n"
 
     tags = [get_markdown_user_tag(u) for u in active_users]
     text += ", ".join(tags)
 
-    reward_per_person = 1
+    reward_per_person = PAYOUTS[TrxType.ACTIVE_IN_CHAT]
     text += f"получили по {reward_per_person}"
 
-    # TODO:
-    # add to sql: username / first_name
-    # message with usernames / first_names
-    # add +1 to active users
+    today = datetime.today().strftime("%Y-%m-%d")
+    external_id = today + "_" + sender_name
+    for user in active_users:
+        user_id = user["user_id"]
+        await pay_if_not_paid(
+            user_id,
+            TrxType.ACTIVE_IN_CHAT,
+            external_id=external_id,
+        )
 
-    await update.message.reply_text(
-        f"{text}",
+    await bot.send_message(
+        chat_id=chat_id,
+        text=f"{text}",
         parse_mode=ParseMode.MARKDOWN,
     )
