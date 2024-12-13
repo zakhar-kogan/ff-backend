@@ -1,6 +1,7 @@
 import asyncio
 import random
 from datetime import datetime
+from html import escape
 
 from telegram import Bot, Update
 from telegram.constants import ParseMode
@@ -118,11 +119,13 @@ async def send_tokens_to_reply(update: Update, context: ContextTypes.DEFAULT_TYP
         pass
 
 
-def get_markdown_user_tag(u: dict):
+def get_html_user_tag(u: dict):
     if u.get("username"):
         return "@" + u["username"]
     elif u.get("first_name"):
-        return f"""[{u["first_name"]}](tg://user?id={u["user_id"]})"""
+        return (
+            f"""<a href="tg://user?id={u["user_id"]}">{escape(u["first_name"])}</a>"""
+        )
     else:
         raise Exception(f"Can't tag user: {u}")
 
@@ -157,7 +160,7 @@ async def _reward_active_chat_users(
 
     text = f"{sender_name} запустил ракету\n"
 
-    tags = [get_markdown_user_tag(u) for u in active_users]
+    tags = [get_html_user_tag(u) for u in active_users]
     text += ", ".join(tags)
 
     reward_per_person = PAYOUTS[TrxType.ACTIVE_IN_CHAT]
@@ -176,5 +179,5 @@ async def _reward_active_chat_users(
     await bot.send_message(
         chat_id=chat_id,
         text=f"{text}",
-        parse_mode=ParseMode.MARKDOWN,
+        parse_mode=ParseMode.HTML,
     )

@@ -13,7 +13,7 @@ from src.tgbot.handlers.chat.service import (
 )
 from src.tgbot.handlers.chat.utils import _reply_and_delete
 from src.tgbot.handlers.treasury.constants import PAYOUTS, TrxType
-from src.tgbot.handlers.treasury.payments import pay_if_not_paid, charge_user
+from src.tgbot.handlers.treasury.payments import charge_user
 from src.tgbot.handlers.treasury.service import get_user_balance
 
 logger = logging.getLogger(__name__)
@@ -42,7 +42,7 @@ async def handle_chat_message(update: Update, context: ContextTypes.DEFAULT_TYPE
 
     # Check if message is a reply to bot's message
     if if_bot_was_mentioned(msg):
-        if random.random() < 0.2:  # free generation
+        if random.random() < 0.3:  # free generation
             return await send_ai_message_to_chat(
                 context.bot,
                 chat_id=update.effective_chat.id,
@@ -50,7 +50,7 @@ async def handle_chat_message(update: Update, context: ContextTypes.DEFAULT_TYPE
             )
 
         return await generate_ai_reply_to_a_message(update, context)
-    elif random.random() < 0.01:
+    elif random.random() < 0.1:
         return await send_ai_message_to_chat(
             context.bot,
             chat_id=update.effective_chat.id,
