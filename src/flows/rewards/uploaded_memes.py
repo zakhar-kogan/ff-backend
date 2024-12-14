@@ -12,7 +12,7 @@ from src.flows.rewards.service import (
     get_all_uploaded_memes_weekly_en,
     get_all_uploaded_memes_weekly_ru,
 )
-from src.storage.constants import MemeStatus
+from src.storage.constants import MemeStatus, MemeType
 from src.storage.service import update_meme
 from src.tgbot.bot import bot
 from src.tgbot.constants import (
@@ -21,7 +21,6 @@ from src.tgbot.constants import (
     TELEGRAM_CHANNEL_RU_CHAT_ID,
     TELEGRAM_CHANNEL_RU_LINK,
 )
-from src.storage.constants import MemeStatus, MemeType
 from src.tgbot.handlers.treasury.constants import TrxType
 from src.tgbot.handlers.treasury.payments import pay_if_not_paid_with_alert
 from src.tgbot.logs import log
