@@ -164,7 +164,7 @@ async def _reward_active_chat_users(
     text += ", ".join(tags)
 
     reward_per_person = PAYOUTS[TrxType.ACTIVE_IN_CHAT]
-    text += f"получили по {reward_per_person}"
+    text += f"\nполучили по {reward_per_person}🍔"
 
     today = datetime.today().strftime("%Y-%m-%d")
     external_id = today + "_" + sender_name
