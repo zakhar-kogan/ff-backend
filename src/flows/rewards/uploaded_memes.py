@@ -21,6 +21,7 @@ from src.tgbot.constants import (
     TELEGRAM_CHANNEL_RU_CHAT_ID,
     TELEGRAM_CHANNEL_RU_LINK,
 )
+from src.storage.constants import MemeStatus, MemeType
 from src.tgbot.handlers.treasury.constants import TrxType
 from src.tgbot.handlers.treasury.payments import pay_if_not_paid_with_alert
 from src.tgbot.logs import log
@@ -45,6 +46,16 @@ from src.tgbot.logs import log
          send a message with a link to the post in channel.
          with stats of user's uploaded memes
 """
+
+
+def _meme_dict_to_input_media(m: dict):
+    if m["type"] == MemeType.IMAGE:
+        return telegram.InputMediaPhoto(media=m["telegram_file_id"])
+    if m["type"] == MemeType.VIDEO:
+        return telegram.InputMediaVideo(media=m["telegram_file_id"])
+    if m["type"] == MemeType.ANIMATION:
+        return telegram.InputMediaVideo(media=m["telegram_file_id"])
+    raise Exception(f"Can't get meme type from: {m}")
 
 
 @flow(name="Reward RU users for weekly top uploaded memes")
@@ -126,7 +137,7 @@ async def reward_ru_users_for_weekly_top_uploaded_memes():
 
     ms = await bot.send_media_group(
         TELEGRAM_CHANNEL_RU_CHAT_ID,
-        [telegram.InputMediaPhoto(media=m["telegram_file_id"]) for m in top_memes],
+        [_meme_dict_to_input_media(m) for m in top_memes],
         caption=channel_text,
         parse_mode="HTML",
     )
@@ -239,7 +250,7 @@ Forward top meme to our bot → <a href="https://t.me/ffmemesbot?start=kitchen">
 
     ms = await bot.send_media_group(
         TELEGRAM_CHANNEL_EN_CHAT_ID,
-        [telegram.InputMediaPhoto(media=m["telegram_file_id"]) for m in top_memes],
+        [_meme_dict_to_input_media(m) for m in top_memes],
         caption=channel_text,
         parse_mode="HTML",
     )

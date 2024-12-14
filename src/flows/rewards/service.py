@@ -10,6 +10,7 @@ async def get_all_uploaded_memes_weekly_ru() -> list[dict[str, Any]]:
         SELECT
             M.id meme_id,
             M.status,
+            M.type,
             M.telegram_file_id,
             S.added_by AS author_id,
             U.nickname,
