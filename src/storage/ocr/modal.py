@@ -1,6 +1,7 @@
 from typing import Any
 
 import httpx
+from prefect import get_run_logger
 
 from src.config import settings
 from src.storage.schemas import OcrResult
@@ -25,14 +26,15 @@ async def ocr_modal(
 
 
 async def ocr_content(content: bytes, language: str = "ru") -> OcrResult | None:
+    logger = get_run_logger()
     try:
         ocr_result = await ocr_modal(content, language)
     except Exception as e:
-        print(f"Modal OCR error: {e}")
+        logger.warning(f"Modal OCR error: {e}")
         return None
 
     if ocr_result is None:
-        print(f"Modal OCR returned no result: {ocr_result}.")
+        logger.warning(f"Modal OCR returned no result: {ocr_result}.")
         return None
 
     try:
@@ -55,5 +57,5 @@ async def ocr_content(content: bytes, language: str = "ru") -> OcrResult | None:
             raw_result=raw_result,
         )
     except Exception as e:
-        print(f"Error parsing OCR result: {e}")
+        logger.warning(f"Error parsing OCR result: {e}")
         return None
