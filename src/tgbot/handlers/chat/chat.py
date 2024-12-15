@@ -114,9 +114,11 @@ async def send_ai_message_to_chat(
     res = await call_chatgpt(AI_PROMPT_RU.format(messages=messages_text))
     logger.info(f"AI REPLY:\n{res}")
 
-    await bot.send_message(
+    msg = await bot.send_message(
         chat_id=chat_id,
         text=res,
         parse_mode="HTML",
         reply_to_message_id=reply_to_message_id,
     )
+
+    await save_telegram_message(msg)

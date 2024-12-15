@@ -54,15 +54,33 @@ async def get_active_chat_users(chat_id: int, limit: int = 10):
 
 async def get_latest_chat_messages(chat_id: int, limit: int = 200):
     select_query = f"""
+        WITH USER_NAMES AS (
+            SELECT
+                id,
+                CASE
+                    WHEN username IS NOT NULL THEN '@' || username
+                    WHEN first_name IS NOT NULL AND LENGTH(first_name) > 1
+                        THEN first_name
+                    ELSE CAST(id AS TEXT)
+                END AS name
+            FROM user_tg
+        )
+
         SELECT
-            M.message_id, M.date, M.user_id, M.text, M.reply_to_message_id,
-            UT.username, UT.first_name
+            M.date,
+            U1.name AS from_name,
+            COALESCE(U2.name, NULL) AS reply_to_name,
+            M.text
         FROM message_tg M
-        INNER JOIN user_tg UT
-            ON UT.id = M.user_id
-        WHERE chat_id = {chat_id}
-        ORDER BY date DESC
-        LIMIT {limit}
+            LEFT JOIN message_tg M2
+                ON M.reply_to_message_id = M2.message_id
+            INNER JOIN USER_NAMES U1
+                ON M.user_id = U1.id
+            LEFT JOIN USER_NAMES U2
+                ON M2.user_id = U2.id
+        WHERE M.chat_id = {chat_id}
+        ORDER BY M.date DESC
+        LIMIT {limit};
     """
 
     return await fetch_all(text(select_query))
