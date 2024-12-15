@@ -1,5 +1,4 @@
 import asyncio
-import logging
 from string import punctuation
 from typing import Any
 
@@ -38,15 +37,16 @@ from src.tgbot.handlers.upload.service import (
 async def ocr_meme_content(
     meme_id: int, content: bytes, language: str
 ) -> dict[str, Any] | None:
-    logging.debug(f"OCRing meme {meme_id} content.")
-    for _ in range(5):  # attempts
+    logger = get_run_logger()
+    logger.debug(f"OCRing meme {meme_id} content.")
+    for _ in range(1):  # attempts
         result = await ocr_content(content, language)
         if isinstance(result, OcrResult):
             s = result.text.translate(str.maketrans("", "", punctuation)).lower()
             result.text = " ".join(s.split())
             return await update_meme(meme_id, ocr_result=result.model_dump(mode="json"))
         else:
-            logging.warning(msg=f"OCR: {str(result)} {meme_id=}")
+            logger.warning(msg=f"OCR: {str(result)} {meme_id=}")
 
         await asyncio.sleep(10)  # flood control
 
@@ -127,11 +127,20 @@ async def tg_meme_pipeline() -> None:
         if not meme or meme["type"] != MemeType.IMAGE:
             continue
 
-        await ocr_meme_content(
+        res = await ocr_meme_content(
             meme["id"],
             meme["__original_content"],
             meme["language_code"],
         )
+
+        if res is None:
+            logger.warning(
+                """
+org_meme_content returned NULL, meaning OCR doesn't work.
+To save on quota I quit from tg_meme_pipeline
+"""
+            )
+            return
 
     # next step of a pipeline
     await final_meme_pipeline()
@@ -156,11 +165,20 @@ async def vk_meme_pipeline() -> None:
         if not meme or meme["type"] != MemeType.IMAGE:
             continue
 
-        await ocr_meme_content(
+        res = await ocr_meme_content(
             meme["id"],
             meme["__original_content"],
             meme["language_code"],
         )
+
+        if res is None:
+            logger.warning(
+                """
+org_meme_content returned NULL, meaning OCR doesn't work.
+To save on quota I quit from tg_meme_pipeline
+"""
+            )
+            return
 
     # next step of a pipeline
     await final_meme_pipeline()
@@ -185,11 +203,20 @@ async def ig_meme_pipeline() -> None:
         if not meme or meme["type"] != MemeType.IMAGE:
             continue
 
-        await ocr_meme_content(
+        res = await ocr_meme_content(
             meme["id"],
             meme["__original_content"],
             meme["language_code"],
         )
+
+        if res is None:
+            logger.warning(
+                """
+org_meme_content returned NULL, meaning OCR doesn't work.
+To save on quota I quit from tg_meme_pipeline
+"""
+            )
+            return
 
         await asyncio.sleep(3)  # flood control
 
@@ -231,11 +258,20 @@ async def ocr_uploaded_memes(limit=100):
             await update_meme(meme["id"], status=MemeStatus.BROKEN_CONTENT_LINK)
             continue
 
-        await ocr_meme_content(
+        res = await ocr_meme_content(
             meme["id"],
             meme_original_content,
             meme["language_code"],
         )
+
+        if res is None:
+            logger.warning(
+                """
+org_meme_content returned NULL, meaning OCR doesn't work.
+To save on quota I quit from tg_meme_pipeline
+"""
+            )
+            return
 
     await final_meme_pipeline()
 
