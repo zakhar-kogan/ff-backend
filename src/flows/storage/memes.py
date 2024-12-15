@@ -39,6 +39,10 @@ async def ocr_meme_content(
 ) -> dict[str, Any] | None:
     logger = get_run_logger()
     logger.debug(f"OCRing meme {meme_id} content.")
+    if language not in ("en", "ru"):
+        logger.info(f"Can't OCR meme with language_code: {language}")
+        return True  # FIXME: to not return NULL and stop the OCR
+
     for _ in range(1):  # attempts
         result = await ocr_content(content, language)
         if isinstance(result, OcrResult):
