@@ -145,6 +145,7 @@ async def get_unloaded_tg_memes(limit) -> list[dict[str, Any]]:
             )
             AND MRT.media->0->>'url' IS NOT NULL
             AND COALESCE(MRT.updated_at, MRT.created_at) >= NOW() - INTERVAL '24 hours'
+        ORDER BY meme.published_at DESC
         LIMIT {limit}
     """
     return await fetch_all(text(select_query))
@@ -167,6 +168,7 @@ async def get_unloaded_vk_memes(limit: int) -> list[dict[str, Any]]:
             AND meme_raw_vk.meme_source_id = meme.meme_source_id
         WHERE 1=1
             AND meme.telegram_file_id IS NULL
+        ORDER BY meme.published_at DESC
         LIMIT {limit}
     """
     return await fetch_all(text(select_query))
@@ -187,6 +189,7 @@ async def get_unloaded_ig_memes(limit: int) -> list[dict[str, Any]]:
             AND MRI.meme_source_id = meme.meme_source_id
         WHERE 1=1
             AND meme.telegram_file_id IS NULL
+        ORDER BY meme.published_at DESC
         LIMIT {limit}
     """
 
