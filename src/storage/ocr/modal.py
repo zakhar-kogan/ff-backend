@@ -30,7 +30,7 @@ async def ocr_content(content: bytes, language: str = "ru") -> OcrResult | None:
     try:
         ocr_result = await ocr_modal(content, language)
     except Exception as e:
-        logger.warning(f"Modal OCR error: {e}")
+        logger.warning(f"Modal OCR error: {e}, language: {language}")
         return None
 
     if ocr_result is None:
