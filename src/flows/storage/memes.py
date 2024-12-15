@@ -225,7 +225,7 @@ To save on quota I quit from tg_meme_pipeline
 
 
 @flow
-async def ocr_uploaded_memes(limit=100):
+async def ocr_uploaded_memes(limit=30):
     """
     Download original meme content one more time & OCR it.
     We can't use meme.telegram_file_id because it is already watermarked.
